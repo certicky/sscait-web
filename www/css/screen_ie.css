@@ -1,0 +1,41 @@
+#menu {
+height: 700em;
+width: 250px;
+}
+
+#content {
+position: absolute;
+left: 250px;
+top: 100px;
+}
+
+#streamContainer, #aboutContainer, #newsContainer {
+	width: 1000px;
+}
+
+#streamContainer div {
+	float: left;
+}
+
+#streamSchedule {
+	width: 240px;
+}
+
+#aboutText {
+	float: left;
+	width: 550px;
+}
+#aboutVideo {
+	float: left;
+}
+
+#newsText {
+	float: left;
+	width: 500px;
+}
+
+#newsPrizePool {
+	float: left;
+	width: 380px;
+}
+

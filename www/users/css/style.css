@@ -1,0 +1,108 @@
+input, textarea {
+	width: 335px;
+}
+
+a, a:visited {
+	color: #470100;
+}
+
+body {
+	background: #F0F0F0;
+}
+
+* {
+	font-family: Arial,Helvetica,sans-serif
+}
+
+#loading, #loading2, #loading3{
+	left:10px;
+	position:relative;
+	top:3px;
+	visibility:hidden;
+}
+
+#error, #error2, #error3{
+	background-color:#ffebe8;
+	border:1px solid #dd3c10;
+	padding:7px 3px;
+	text-align:center;
+	color:#b00000;
+	margin-top:10px;
+	visibility:hidden;
+	font-family:Arial,Helvetica,sans-serif
+	font-size:12px; 
+	color:#165a16;
+	text-align:center;
+}
+
+.done{
+	background:#b8edb8;
+	border:1px solid #269926;
+	padding:10px;
+	width:90%; 
+	margin:20px auto; 
+	display:none;
+}
+
+.done p{
+	font-family:Arial,Helvetica,sans-serif
+	font-size:12px; 
+	color:#165a16;
+	text-align:center;
+}
+
+.message{
+	background:#b8edb8;
+	border:1px solid #269926;
+	padding:10px;
+	width:90%; 
+	margin:20px auto; 
+	font-family:Arial,Helvetica,sans-serif
+	font-size:12px; 
+	color:#165a16;
+	text-align:center;
+}
+
+.error{
+	background:#ffbfbf;
+	border:1px solid #ff0000;
+	padding:10px;
+	width:90%; 
+	margin:20px auto; 
+	font-family:Arial,Helvetica,sans-serif
+	font-size:12px; 
+	color:#ff0000;
+	text-align:center;
+}
+
+/**********Pagination css**********/
+div.pagination {
+	padding: 3px;
+	margin: 3px;
+}
+
+div.pagination a {
+	padding: 2px 5px 2px 5px;
+	margin: 2px;
+	border: 1px solid #AAAADD;
+	text-decoration: none; /* no underline */
+	color: #000099;
+}
+div.pagination a:hover, div.pagination a:active {
+	border: 1px solid #1a6a1a;
+	background-color:#1a6a1a;
+	color: #fff;
+}
+div.pagination span.current {
+	padding: 2px 5px 2px 5px;
+	margin: 2px;
+	border: 1px solid #1a6a1a;
+	font-weight: bold;
+	background-color: #1a6a1a;
+	color: #FFF;
+	}
+div.pagination span.disabled {
+	padding: 2px 5px 2px 5px;
+	margin: 2px;
+	color: #000;
+	}

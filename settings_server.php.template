@@ -1,0 +1,72 @@
+<?php
+
+// in the case of forwarded remote IPs
+if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+    $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+}
+
+// in the case when run via the CLI
+if (!isset($_SERVER["SERVER_NAME"])) {
+    $_SERVER['SERVER_NAME'] = '';
+}
+
+//======================================================================
+// GENERAL SETTINGS
+//======================================================================
+$GLOBALS["ADMIN_EMAIL"] = 'admin@email.com';
+$GLOBALS["DOMAIN_WITHOUT_SLASH"] = "http://".trim($_SERVER['SERVER_NAME'],"/");
+$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"] = '/absolute/path/to/folder/with/the/Bots';
+$GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"] = '/var/www/html/Replays';
+$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"] = '/var/www/html/cache';
+
+//======================================================================
+// MAIN WEBSITE SETTINGS
+//======================================================================
+define("PAGE_TITLE","[SSCAIT] Student StarCraft AI Tournament &amp; Ladder");
+define("DOMAIN",$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]);
+
+//======================================================================
+// DATABASE
+//======================================================================
+$db_host = 'localhost';
+$db_database = 'sc';
+$db_username = 'sc-database-user';
+$db_password = 'password-for-the-user';
+$GLOBALS['mysqlConnection'] = mysql_connect($db_host,$db_username,$db_password);
+@mysql_select_db($db_database) or
+    die("<div>Unable to connect to database.</div>");
+
+//======================================================================
+// EMAILS
+//======================================================================
+$smtpinfo = array();
+$GLOBALS["SMTP_HOST"] = "ssl://smtp.gmail.com";
+$GLOBALS["SMTP_PORT"] = "465";
+$GLOBALS["SMTP_AUTH"] = true;
+$GLOBALS["SMTP_USERNAME"] = "gmail-account";
+$GLOBALS["SMTP_PASSWORD"] = "gmail-password";
+
+//======================================================================
+// ELO ratings remote url
+//======================================================================
+$eloRatingsRemoteURL = 'http://cachedsscaitscores.krasi0.com/eloRatings/';
+$eloRatingsBASILRemoteURL = 'https://data.basil-ladder.net/stats/ranking.json';
+
+//======================================================================
+// DEBUG MODE
+//======================================================================
+$GLOBALS['debugMode'] = true;
+
+//======================================================================
+// VOTING FOR THE NEXT MU
+//======================================================================
+$GLOBALS['votingForPlayersEnabled'] = true;
+$GLOBALS['votingForPlayersUseCaptcha'] = true;
+
+//======================================================================
+// Logging in / registering, etc.
+//======================================================================
+$GLOBALS['loggingInEnabled'] = true;
+$GLOBALS['competitivePhase'] = false;
+$GLOBALS['eliminationBracketPhase'] = false;
+

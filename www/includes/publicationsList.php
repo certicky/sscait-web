@@ -1,0 +1,5 @@
+<ul>
+    <li>Michal Čertický, David Churchill, Kyung-Joong Kim, Martin Čertický, Richard Kelly. <a href="https://certicky.github.io/files/publications/Starcraft-AI-ToG-2018.pdf" >StarCraft AI Competitions, Bots and Tournament Manager Software</a>. <i>IEEE Transactions on Games (ToG): 1-13. DOI: 10.1109/TG.2018.2883499. Print ISSN: 2475-1502. Online ISSN: 2475-1510. 2018</i>.</li>
+	<li>M. Čertický, D. Churchill. <a target="_blank" href="https://certicky.github.io/files/publications/aiide17-certicky-churchill.pdf">The Current State of StarCraft AI Competitions and Bots</a>. <i>In Proceedings of the AIIDE 2017 Workshop on Artificial Intelligence for Strategy Games. 2017</i>.</li>
+	<li>D. Churchill, M. Preuss, F. Richoux, G. Synnaeve, A. Uriarte, S. Ontanón, M. Čertický. <a target="_blank" href="https://certicky.github.io/files/publications/ecgg15_chapter-competitions.pdf">StarCraft Bots and Competitions</a>. Chapter in <i>Encyclopedia of Computer Graphics and Games (ECGG). Springer International Publishing. ISBN: 978-3-319-08234-9. 2016</i>.</li>
+</ul>
