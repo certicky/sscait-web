@@ -5,3 +5,4 @@ www/settings_server.php
 www/liquipedia_last_request_time
 www/cache/*
 !.idea/dictionaries/root.xml
+settings_server.php
