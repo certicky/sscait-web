@@ -5,6 +5,11 @@
 * This web frontend should typically be hosted on the Host machine of SSCAIT Tournament Manager, where its database also runs (see https://github.com/certicky/sscait-tournamentmanager).
 * **Warning:** This implementation is a complete spaghetti code mess. It's a hack on top of a hack and quick patch on top of a quick patch. None of this was designed to be used for more than one semester, yet here we are, 12 years later, still running it. Fun!
 
+
+![diagram-small](https://user-images.githubusercontent.com/3534507/204827784-32c94af4-0bee-4f2f-b2f8-c2d01b88e156.png)
+
+*Fig.1: Project Architecture Diagram*
+
 #### Installation
 
 * Install web server of your choice and PHP 7 or newer compatible version.
