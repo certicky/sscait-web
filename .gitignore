@@ -4,5 +4,6 @@ www/includes/_cache_voteForPlayers.html
 www/settings_server.php
 www/liquipedia_last_request_time
 www/cache/*
+www/admin_scripts
 !.idea/dictionaries/root.xml
 settings_server.php
