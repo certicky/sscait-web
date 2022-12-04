@@ -23,8 +23,7 @@
   * `$GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"]`: folder containing the saved replay files - part of the set up of SSCAIT Tournament Manager
   * `$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"]`: folder reserved for data caching - just create an empty folder and give web server user the read & write permissions
   * `$db_host`, `$db_username`, `$db_password`: database credentials
-  * `$GLOBALS["SMTP_USERNAME"]`, `$GLOBALS["SMTP_USERNAME"]`: credentials of real Gmail user that's used to send emails to bot authors and to admin
-  * `$GLOBALS["SMTP_"]`
+  * `$GLOBALS["SMTP_*"]`: credentials for whatever external SMTP service we're using to send emails to bot authors and to admin (e.g. https://www.sendinblue.com/)
 * If everything went well, the web should be accessible at a location determined by your web server - usually `http://localhost/` or `http://localhost:8080`.
 
 
