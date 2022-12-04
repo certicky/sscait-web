@@ -40,11 +40,11 @@ $GLOBALS['mysqlConnection'] = mysql_connect($db_host,$db_username,$db_password);
 // EMAILS
 //======================================================================
 $smtpinfo = array();
-$GLOBALS["SMTP_HOST"] = "ssl://smtp.gmail.com";
-$GLOBALS["SMTP_PORT"] = "465";
+$GLOBALS["SMTP_HOST"] = "smtp.some-smtp-server.com";
+$GLOBALS["SMTP_PORT"] = "587";
 $GLOBALS["SMTP_AUTH"] = true;
-$GLOBALS["SMTP_USERNAME"] = "gmail-account";
-$GLOBALS["SMTP_PASSWORD"] = "gmail-password";
+$GLOBALS["SMTP_USERNAME"] = "smtp-server-account";
+$GLOBALS["SMTP_PASSWORD"] = "smtp-server-password";
 
 //======================================================================
 // ELO ratings remote url
