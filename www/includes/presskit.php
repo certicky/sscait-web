@@ -16,13 +16,11 @@
 <h4><a name="Factsheet">Factsheet</a></h4>
 <ul>
    <li>Hosts: Czech Technical University in Prague & Comenius University, Bratislava</li>
-   <li>Founder &amp; Organizer: <a href="http://agents.fel.cvut.cz/~certicky/" target="_blank">Michal Čertický</a></li>
+   <li>Founder &amp; Organizer: <a href="https://certicky.github.io/" target="_blank">Michal Čertický</a></li>
    <li>Founded: 2011</li>
-   <li>Participants 2015: 44+</li>
    <li>Website: <a target="_blank" href="http://sscaitournament.com">sscaitournament.com</a></li>
-   <li>Press Contact: Paul Paradies, <a target="_blank" href="mailto:nepetanigra@yahoo.com">nepetanigra@yahoo.com</a></li>
-   <li>Social: <a target="_blank" href="http://facebook.com/groups/bwapi">facebook.com/groups/bwapi</a> <a target="_blank" href="twitter.com/sscaitournament" target="twitter.com/sscaitournament">twitter.com/sscaitournament</a></li>
-   <li>TeamLiquid: <a target="_blank" href="http://wiki.teamliquid.net/starcraft/SSCAIT2015" >SSCAIT'15 on Teamliquid.net</a></li>
+   <li>Social: <a target="_blank" href="https://discordapp.com/invite/w9wRRrF">discordapp.com/invite/w9wRRrF</a> / <a target="_blank" href="http://facebook.com/groups/bwapi">facebook.com/groups/bwapi</a> / <a target="_blank" href="twitter.com/sscaitournament" target="twitter.com/sscaitournament">twitter.com/sscaitournament</a></li>
+   <li>Liquipedia: <a target="_blank" href="https://liquipedia.net/starcraft/SSCAIT">SSCAIT on Liquipedia.net</a></li>
    <li>
       Partner organisations:
       <ul>
@@ -133,12 +131,13 @@ clever heuristics and fastest learning capabilities.</p>
 </table>
 <hr>
 <h4><a name="team">Team</a></h4>
+<p>The list of people who kept the tournament running as of 2015. Since then, the whole project has been open-sourced and the list of contributors is more fluid.</p>
 <table id="organizers" align="center">
    <tr>
       <td><img src="./images/organizers/certicky.png" alt="" /></td>
       <td class="name">Michal Čertický</td>
       <td>Founder, Admin, Programming</td>
-      <td><a target="_blank" href="http://agents.fel.cvut.cz/~certicky/">homepage</a></td>
+      <td><a target="_blank" href="https://certicky.github.io/">homepage</a></td>
    </tr>
    <tr>
       <td><img src="./images/organizers/nepeta.jpg" alt="" /></td>
@@ -196,10 +195,9 @@ clever heuristics and fastest learning capabilities.</p>
 <hr>
 <h4><a name="contact">Press/PR Contact</a></h4>
 <ul>
-   <li>Paul Paradies: <a target="_blank" href="mailto:nepetanigra@yahoo.com">nepetanigra@yahoo.com</a></li>
+   <li><a target="_blank" href="https://discordapp.com/invite/w9wRRrF">SSCAIT Discord server</a></li>
    <li><a target="_blank" href="http://facebook.com/groups/bwapi">Facebook.com/groups/bwapi</a></li>
    <li><a target="_blank" href="http://twitter.com/sscaitournament">Twitter.com/sscaitournament</a></li>
-   <li>IRC: irc.freenode.net #bwapi</li>
 </ul>
 <hr>
 <h4><a name="banners">Banners</a></h4>
