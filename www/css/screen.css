@@ -932,18 +932,6 @@ img.achievement_icon_small {
 	padding-right: 2ex;
 }
 
-#organizers tr, td, th {
-	margin: 0;
-	padding: 0 10px;
-}
-#organizers img {
-	width: 60px;
-	height: 60px;
-}
-#organizers td.name {
-	font-weight: bold;
-}
-
 span.uncompetitive {
 	font-size: 90%;
 	color: rgb(70,70,70);
