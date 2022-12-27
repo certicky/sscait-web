@@ -70,7 +70,8 @@ function getBotAlias($botName) {
         "Dragon" => "DragonBot",
         "Lukas Moravec" => "Jonathan",
         "krasi0P" => "Krasi0bot",
-        "Infested Artosis" => "Infested_Artosis"
+        "Infested Artosis" => "Infested_Artosis",
+	"Boris" => "User:%27Airstrike%27_Ivanov/Boris"
     );
 
     if (isset($botAliases[$botName])) $botName = $botAliases[$botName];
