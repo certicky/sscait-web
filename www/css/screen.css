@@ -823,6 +823,9 @@ img.achievement_icon_small {
 	border-bottom: solid 1px black;
 	padding-left: 2px;
 	padding-right: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #following_matches td.vs {
