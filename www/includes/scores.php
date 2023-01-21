@@ -41,41 +41,35 @@ include("./includes/getPortrait.php");
 $recentGames = 50;	// how many recent games should be considered for win ratio computation
 
 // Function used to sort the array of bots by a certain key
-function aasort (&$array, $key) {
-    $sorter=array();
-    $ret=array();
-    reset($array);
-    foreach ($array as $ii => $va) {
-        $sorter[$ii]=$va[$key];
-    }
-    arsort($sorter);
-    foreach ($sorter as $ii => $va) {
-        $ret[$ii]=$array[$ii];
-    }
-    $array=$ret;
+function aasort(array &$bots, string $key) {
+    usort($bots, function($a, $b) use ($key) {
+        return $b[$key] <=> $a[$key];
+    });
 }
+
 ?>
+
+
 <div id="upcomingMatchesWrapper">
-<?php
-$res = mysql_query("SELECT * FROM games WHERE result='unfinished' ORDER BY game_id ASC LIMIT 10;");
-if (mysql_num_rows($res) > 0) {
-	echo '<h2>Upcoming Matches:</h2><div style="font-size: 90%">';
-	$matches = array();
-	while ($l = mysql_fetch_assoc($res)) {
-	        $res1 = mysql_query("SELECT full_name FROM fos_user WHERE id='".$l['bot1']."';");
-	        $res2 = mysql_query("SELECT full_name FROM fos_user WHERE id='".$l['bot2']."';");
-	        $n1 = mysql_fetch_assoc($res1);
-	        $n2 = mysql_fetch_assoc($res2);
-		$matches[] = '<span style="font-family: monospace;">'.$n1['full_name'].' vs. '.$n2['full_name'].'</span>';
-	}
-	if (mysql_num_rows($res) > 0)
-		echo join(' <span class="match_divider">|</span> ',$matches);
-	echo '</div>';
-}
-?>
-
-
-
+    <?php
+    $res = mysql_query("
+        SELECT
+            bot1.full_name as bot1_name,
+            bot2.full_name as bot2_name
+        FROM games
+        LEFT JOIN fos_user bot1 ON bot1.id = games.bot1
+        LEFT JOIN fos_user bot2 ON bot2.id = games.bot2
+        WHERE result='unfinished'
+        ORDER BY game_id ASC
+        LIMIT 10;
+    ");
+        echo '<h2>Upcoming Matches:</h2><div style="font-size: 90%">';
+        while ($match = mysql_fetch_assoc($res)) {
+            echo '<span style="font-family: monospace;">'.$match['bot1_name'].' vs. '.$match['bot2_name'].'</span>';
+            echo ' <span class="match_divider">|</span> ';
+        }
+        echo '</div>';
+    ?>
     <div style="margin-top: 15px; font-size: 80%">
         <table>
         	<tr>
