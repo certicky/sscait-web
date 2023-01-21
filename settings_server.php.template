@@ -1,4 +1,6 @@
 <?php
+// a fix for old PHP5 style MYSQL syntax
+include_once('./includes/fix_mysql.php');
 
 // in the case of forwarded remote IPs
 if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
