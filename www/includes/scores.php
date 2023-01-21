@@ -87,88 +87,87 @@ function aasort(array &$bots, string $key) {
 
 
 <?php
-// Get all the confirmed bots
 list($eloRatings, $iccupFormula, $iccupRanks, $eloRatingsNote) = getEloRatings();
+
+// Get all the confirmed bots
 $bots = array();
-$res = mysql_query("SELECT * FROM fos_user WHERE email_confirmed='1';");
+$res = mysql_query("SELECT * FROM fos_user WHERE email_confirmed='1'");
 while ($l = mysql_fetch_assoc($res)) {
-	$name = $l['full_name'];
-	$school = $l['school'];
-	$student = $l['student'];
-	$race = $l['bot_race'];
-	//$desc =  strlen($l['bot_description']) > 120 ? substr($l['bot_description'],0,120)."..." : $l['bot_description'];
-	$desc = $l['bot_description'];
-	$update = $l['last_update_time'];
-	if ($l['bot_enabled'] == '1') {
-		$status = '<span class="ready">Enabled</span>';
-	} else {
-		$status = '<span class="disabled">Disabled</span>';
-	}
-	$winRes =  mysql_query("SELECT count(game_id) FROM `games` WHERE ((bot1='".$l['id']."' AND result='1') or (bot2='".$l['id']."' AND result='2'))");
-	$lossRes = mysql_query("SELECT count(game_id) FROM `games` WHERE ((bot1='".$l['id']."' AND result='2') or (bot2='".$l['id']."' AND result='1'))");
-	$drawsRes = mysql_query("SELECT count(game_id) FROM `games` WHERE  result='draw' AND ((bot1='".$l['id']."') OR (bot2='".$l['id']."'))");
-	$wins = mysql_fetch_row($winRes);
-	$losses = mysql_fetch_row($lossRes);
-	$draws = mysql_fetch_row($drawsRes);
-	$winRecentRes =  mysql_query("SELECT count(game_id) FROM `games` WHERE (((bot1='".$l['id']."' AND result='1') or (bot2='".$l['id']."' AND result='2')) AND (datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".$recentGames.",1)  ))");
-	$lossRecentRes = mysql_query("SELECT count(game_id) FROM `games` WHERE (((bot1='".$l['id']."' AND result='2') or (bot2='".$l['id']."' AND result='1')) AND (datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".($recentGames).",1) ))");
-	$drawsRecentRes = mysql_query("SELECT count(game_id) FROM `games` WHERE  (result='draw' AND ((bot1='".$l['id']."') OR (bot2='".$l['id']."')) AND (datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".$recentGames.",1)  ) )");
-	$winsRecent = mysql_fetch_row($winRecentRes);
-	$lossesRecent = mysql_fetch_row($lossRecentRes);
-	$drawsRecent = mysql_fetch_row($drawsRecentRes);
-    if ($winsRecent[0]+$lossesRecent[0] != 0) {
-		$winRate = round(($winsRecent[0]/($winsRecent[0]+$lossesRecent[0]))*100,2);
-	} else {
-		$winRate = 0;
-	}
-	if ($wins[0]+$losses[0]+$draws[0] <= $recentGames) $winRate = "not enough games<br/>($recentGames needed)";
-	$score = $wins[0]*3+$draws[0];
-	if (stripos($name,"(example)") !== FALSE) $score = "<span class=\"uncompetitive\">$score<br/>(uncompet.)</span>";
-	if ($wins[0]+$losses[0]+$draws[0] != 0) {
-		$avgScore = round(($wins[0]*3+$draws[0]*1)/(($wins[0]+$losses[0]+$draws[0])*3)*3,2);
-	} else {
-		$avgScore = 0;
-	}
-	// division
-	if ($student == 1) {
-		$division = "<b>Student</b>";
-		if (trim($school) != "") $division .= ": $school";
-	} else {
-		$division = "<b>Mixed</b>";
-	}
-	// achievements
-	$achi = "";
-	$achiIndex = 0;
-	$achRes = mysql_query("SELECT achievements.type,title,text FROM achievements,achievement_texts WHERE bot_id='".$l['id']."' AND achievements.type=achievement_texts.type ORDER BY datetime DESC;");
-	while ($a = mysql_fetch_assoc($achRes)) {
-		$achiIndex += 1;
-		if ($achiIndex <= 6) {
-		    $achi .= '<a title="'.$a['title'].' ('.lcfirst(trim($a['text'],".")).')" href="./index.php?action=achievements#'.$a['type'].'"><img class="achievement_icon achievement_icon_small" src="./images/achievements/small/'.$a['type'].'.png" alt="'.$a['title'].'. " /></a>';
-		}
-	}
-	// Insert the bot into array
-	$sortKey = $winRate;
-    $bots[$l['id']] = [
-        'id'              => $l['id'],
-        'name'            => $name,
-        'portrait'        => getPortrait($race, $achRes, false),
-        'race'            => $race,
-        'eloRating'       => !empty($eloRatings[$name]) && $l['bot_enabled'] == '1' ? $eloRatings[$name] : '-',
-        'iccupFormula'    => !empty($iccupFormula[$name]) ? $iccupFormula[$name] : '-',
-        'iccupRank'       => !empty($iccupRanks[$name]) ? $iccupRanks[$name] : '-',
-        'wins'            => $wins[0],
-        'losses'          => $losses[0],
-        'draws'           => $draws[0],
-        'score'           => $score,
-        'avgScore'        => $avgScore,
-        'winRate'         => $winRate,
-        'achievements'    => $achi,
+    $name = $l['full_name'];
+    $school = $l['school'];
+    $student = $l['student'];
+    $race = $l['bot_race'];
+    $desc = $l['bot_description'];
+    $update = $l['last_update_time'];
+    if ($l['bot_enabled'] == '1') {
+        $status = '<span class="ready">Enabled</span>';
+    } else {
+        $status = '<span class="disabled">Disabled</span>';
+    }
+    $gameRes = mysql_query("SELECT SUM(result = '1') as wins, SUM(result = '2') as losses, SUM(result = 'draw') as draws FROM games WHERE bot1 = '".$l['id']."' OR bot2 = '".$l['id']."'");
+    $games = mysql_fetch_assoc($gameRes);
+    $wins = $games['wins'];
+    $losses = $games['losses'];
+    $draws = $games['draws'];
+    $recentRes = mysql_query("SELECT SUM(result = '1') as wins, SUM(result = '2') as losses, SUM(result = 'draw') as draws FROM games WHERE (bot1 = '".$l['id']."' OR bot2 = '".$l['id']."') AND datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".$recentGames.",1) ");
+    $recent = mysql_fetch_assoc($recentRes);
+    $winsRecent = $recent['wins'];
+    $lossesRecent = $recent['losses'];
+    $drawsRecent = $recent['draws'];
+    if ($winsRecent+$lossesRecent != 0) {
+        $winRate = round(($winsRecent/($winsRecent+$lossesRecent))*100,2);
+    } else {
+        $winRate = "N/A";
+    }
+    if ($wins+$losses+$draws != 0) {
+        $avgScore = round(($wins*3+$draws*1)/(($wins+$losses+$draws)*3)*3,2);
+    } else {
+        $avgScore = 0;
+    }
+    // division
+    if ($student == 1) {
+        $division = "<b>Student</b>";
+        if (trim($school) != "") $division .= ": $school";
+    } else {
+        $division = "<b>Mixed</b>";
+    }
+    // achievements
+    $achi = "";
+    $achiIndex = 0;
+    $achRes = mysql_query("SELECT achievements.type,title,text FROM achievements,achievement_texts WHERE bot_id='".$l['id']."' AND achievements.type=achievement_texts.type ORDER BY datetime DESC;");
+    while ($a = mysql_fetch_assoc($achRes)) {
+        $achiIndex += 1;
+        if ($achiIndex <= 6) {
+            $achi .= '<a title="'.$a['title'].' ('.lcfirst(trim($a['text'],".")).')" href="./index.php?action=achievements#'.$a['type'].'"><img class="achievement_icon achievement_icon_small" src="./images/achievements/small/'.$a['type'].'.png" alt="'.$a['title'].'. " /></a>';
+        }
+    }
+
+    $bots[$l['id']] = array(
+        'id' => $l['id'],
+        'name' => $name,
+        'portrait' => getPortrait($race, $achRes, false),
+        'school' => $school,
+        'student' => $student,
+        'race' => $race,
+        'eloRating' => !empty($eloRatings[$name]) && $l['bot_enabled'] == '1' ? $eloRatings[$name] : '-',
+        'iccupFormula' => !empty($iccupFormula[$name]) ? $iccupFormula[$name] : '-',
+        'iccupRank' => !empty($iccupRanks[$name]) ? $iccupRanks[$name] : '-',
+        'description' => $desc,
+        'update' => $update,
+        'status' => $status,
+        'wins' => $wins,
+        'losses' => $losses,
+        'draws' => $draws,
+        'score' => ($wins*3+$draws),
+        'avgScore' => $avgScore,
+        'winsRecent' => $winsRecent,
+        'lossesRecent' => $lossesRecent,
+        'drawsRecent' => $drawsRecent,
+        'winRate' => $winRate,
+        'achievements' => $achi,
         'achievementsNum' => mysql_num_rows($achRes),
-        'division'        => $division,
-        'status'          => $status,
-        'description'     => $desc,
-        'update'          => $update,
-    ];
+        'division' => $division
+    );
 }
 
 // sort the bot list
@@ -398,11 +397,6 @@ foreach ($bots as $bot) {
          . "</td>"
          . "<td class=\"bot_updated\" style=\"font-size: 85%;\">"
          . $bot['update']
-         //. "<div class=\"binary-link\">[ <a target=\"_blank\" href=\"./bot_binary.php?bot="
-         //. urlencode($bot['name'])
-         //. "\">binary</a> ]<br/>[ <a target=\"_blank\" href=\"./bot_binary.php?bot="
-         //. urlencode($bot['name'])
-         //. "&amp;bwapi_dll=true\">bwapi.dll</a> ]"
 		 ."</div></td></tr>\n";
 }
 
