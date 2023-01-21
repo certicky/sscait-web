@@ -412,28 +412,26 @@ foreach ($bots as $bot) {
 </script>
 
 <a name="results"></a>
+
 <h2>Game Results:</h2>
 <div>
 <table id="resultlist">
 <tr><td>Bot 1</td><td>Bot 2</td><td>Result</td><td>Notes</td><td>Time</td><td>Replay</td></tr>
 <?php
-	$res = mysql_query("SELECT game_id,bot1,bot2,result,datetime,note FROM games WHERE result='1' OR result='2' OR result='draw' ORDER BY datetime DESC LIMIT 100;");
-	while ($line = mysql_fetch_assoc($res)) {
-		$resBot1 = mysql_query("SELECT full_name,bot_race,bot_type FROM fos_user WHERE id='".$line['bot1']."' LIMIT 1");
-		$resBot2 = mysql_query("SELECT full_name,bot_race,bot_type FROM fos_user WHERE id='".$line['bot2']."' LIMIT 1");
-		$bot1 = mysql_fetch_assoc($resBot1);
-		$bot2 = mysql_fetch_assoc($resBot2);
-		echo '<tr>';
-		echo '<td><a href="./index.php?action=botDetails&bot='.urlencode($bot1['full_name']).'">'.$bot1['full_name'].'</a><br/>('.$bot1['bot_race'].', '.$bot1['bot_type'].')</td><td><a href="./index.php?action=botDetails&bot='.urlencode($bot2['full_name']).'">'.$bot2['full_name'].'</a><br/>('.$bot2['bot_race'].', '.$bot2['bot_type'].')</td><td>Bot '.$line['result'].'</td><td>'.str_replace(";"," ",str_replace("draw","timeOut",str_replace("_crashed","crashed",$line['note']))).'</td><td>'.date("Y-m-d H:i:s",$line['datetime']).'</td>';
+    // get game info and bot1 and bot2 info in a single query
+    $res = mysql_query("SELECT game_id, bot1, bot2, result, datetime, note, fos_user_bot1.full_name as bot1_name, fos_user_bot1.bot_race as bot1_race, fos_user_bot1.bot_type as bot1_type, fos_user_bot2.full_name as bot2_name, fos_user_bot2.bot_race as bot2_race, fos_user_bot2.bot_type as bot2_type FROM games JOIN fos_user as fos_user_bot1 ON games.bot1 = fos_user_bot1.id JOIN fos_user as fos_user_bot2 ON games.bot2 = fos_user_bot2.id WHERE result='1' OR result='2' OR result='draw' ORDER BY datetime DESC LIMIT 100;");
+    while ($line = mysql_fetch_assoc($res)) {
+        echo '<tr>';
+        echo '<td><a href="./index.php?action=botDetails&bot='.urlencode($line['bot1_name']).'">'.$line['bot1_name'].'</a><br/>('.$line['bot1_race'].', '.$line['bot1_type'].')</td><td><a href="./index.php?action=botDetails&bot='.urlencode($line['bot2_name']).'">'.$line['bot2_name'].'</a><br/>('.$line['bot2_race'].', '.$line['bot2_type'].')</td><td>Bot '.$line['result'].'</td><td>'.str_replace(";"," ",str_replace("draw","timeOut",str_replace("_crashed","crashed",$line['note']))).'</td><td>'.date("Y-m-d H:i:s",$line['datetime']).'</td>';
 
-		$repUrl = getReplayFileURL($line['game_id'], $bot1['full_name'], $bot2['full_name']);
-		if ($repUrl != '') {
-		  echo '<td><a href="'.$repUrl.'" target="_blank">.rep</a> / <a href="http://www.openbw.com/replay-viewer/?rep='.urlencode($repUrl).'" target="_blank">watch</a></td>';
-		} else {
-		  echo '<td></td>';
-		}
-		echo '</tr>';
-	}
+        $repUrl = getReplayFileURL($line['game_id'], $line['bot1_name'], $line['bot2_name']);
+        if ($repUrl != '') {
+          echo '<td><a href="'.$repUrl.'" target="_blank">.rep</a> / <a href="http://www.openbw.com/replay-viewer/?rep='.urlencode($repUrl).'" target="_blank">watch</a></td>';
+        } else {
+          echo '<td></td>';
+        }
+        echo '</tr>';
+    }
 ?>
 </table>
 </div>
