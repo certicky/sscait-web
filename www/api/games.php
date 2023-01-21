@@ -51,22 +51,16 @@ function getBotId($name) {
 }
 
 function getReplayLink($gameId, $bot1Name, $bot2Name) {
+	$paddedGameId = str_pad($gameId, 4, '0', STR_PAD_LEFT);
+
 	foreach (scandir($GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"].'/'.strtoupper($bot1Name)) as $fname) {
-		if (strpos($fname,$gameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot1Name).'/'.$fname;
+		if (strpos($fname, $paddedGameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot1Name).'/'.$fname;
 	}
 	foreach (scandir($GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"].'/'.strtoupper($bot2Name)) as $fname) {
-		if (strpos($fname,$gameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot2Name).'/'.$fname;
+		if (strpos($fname, $paddedGameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot2Name).'/'.$fname;
 	}
 	return null;
 }
-
-/*
-if (isset($get['date']) && is_numeric($get['date'])) {
-	$date = $get['date'];
-} else {
-	$date = time();
-}
-*/
 
 if (isset($get['page']) && is_numeric($get['page'])) {
         $page = $get['page'];
