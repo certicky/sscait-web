@@ -24,8 +24,8 @@ $GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"] = '/var/www/html/cache';
 //======================================================================
 // MAIN WEBSITE SETTINGS
 //======================================================================
-define("PAGE_TITLE","[SSCAIT] Student StarCraft AI Tournament &amp; Ladder");
-define("DOMAIN",$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]);
+if (!defined("PAGE_TITLE")) define("PAGE_TITLE","[SSCAIT] Student StarCraft AI Tournament &amp; Ladder");
+if (!defined("DOMAIN")) define("DOMAIN",$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]);
 
 //======================================================================
 // DATABASE
