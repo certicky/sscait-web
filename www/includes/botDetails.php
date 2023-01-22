@@ -33,17 +33,19 @@ if ($botId == null) {
 	// get the ELO ratings and ICCUP rank
 	list($eloRatings, $iccupFormula, $iccupRanks, $eloRatingsNote) = getEloRatings();
 	arsort($eloRatings);
-	$botELO = $eloRatings[$botName];
-	$botIccupFormula = $iccupFormula[$botName];
-	$botICCUP = $iccupRanks[$botName];
+	$botELO = isset($eloRatings[$botName]) ? $eloRatings[$botName] : '';
+	$botIccupFormula = isset($iccupFormula[$botName]) ? $iccupFormula[$botName] : '';
+	$botICCUP = isset($iccupRanks[$botName]) ? $iccupRanks[$botName] : '';
 
 	// get the wins / losses / draws
-	$winRes =  mysql_query("SELECT count(game_id) FROM `games` WHERE ((bot1='".$botId."' AND result='1') or (bot2='".$botId."' AND result='2'))");
-	$lossRes = mysql_query("SELECT count(game_id) FROM `games` WHERE ((bot1='".$botId."' AND result='2') or (bot2='".$botId."' AND result='1'))");
-	$drawsRes = mysql_query("SELECT count(game_id) FROM `games` WHERE  result='draw' AND ((bot1='".$botId."') OR (bot2='".$botId."'))");
-	$wins = mysql_fetch_row($winRes); $wins = $wins[0];
-	$losses = mysql_fetch_row($lossRes); $losses = $losses[0];
-	$draws = mysql_fetch_row($drawsRes); $draws = $draws[0];
+	$r = mysql_query("SELECT
+			(SELECT COUNT(game_id) FROM `games` WHERE bot1='".$botId."' AND result='1' OR bot2='".$botId."' AND result='2') as wins,
+			(SELECT COUNT(game_id) FROM `games` WHERE bot1='".$botId."' AND result='2' OR bot2='".$botId."' AND result='1') as losses,
+			(SELECT COUNT(game_id) FROM `games` WHERE result='draw' AND bot1='".$botId."' OR bot2='".$botId."') as draws");
+	$data = mysql_fetch_assoc($r);
+	$wins = $data['wins'];
+	$losses = $data['losses'];
+	$draws = $data['draws'];
 
 	// achievements
 	$achi = "";
@@ -129,98 +131,79 @@ if ($botId == null) {
     				$bots = array();
     				$months = array();
     				$results = array();
-    
-    				// wins
-    				$q = "
-    				SELECT
-    				DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m') AS month,
-    				full_name,
-    				COUNT(game_id) AS game_count
-    				FROM games JOIN (SELECT full_name, id FROM fos_user WHERE full_name IN (".implode(',',$allowedBots).")) AS fos_user ON (fos_user.id = games.bot1 OR fos_user.id = games.bot2)
-    				WHERE
-    				datetime > UNIX_TIMESTAMP(NOW() - INTERVAL $winRateChartYears YEAR)
-    				AND ((result = 1 AND bot1=fos_user.id) OR (result = 2 AND bot2=fos_user.id))
-    				GROUP BY
-    				DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m'),
-    				full_name
-    				ORDER BY DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m') ASC
-    				";
-    
-    				$res = mysql_query($q);
-    				while ($line = mysql_fetch_assoc($res)) {
-    				if (!in_array($line['month'],$months)) $months[] = $line['month'];
-    				if (!in_array($line['full_name'],$bots)) $bots[] = $line['full_name'];
-    				if (!array_key_exists($line['month'],$results)) $results[$line['month']] = array();
-    				if (!array_key_exists($line['full_name'],$results[$line['month']])) $results[$line['month']][$line['full_name']] = array("wins" => 0,"losses" => 0);
-    				$results[$line['month']][$line['full_name']]["wins"] = intval($line['game_count']);
-    				}
-    
-    				// losses
-    				$q = "
-    				SELECT
-    				DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m') AS month,
-    						full_name,
-    						COUNT(game_id) AS game_count
-    						FROM games JOIN (SELECT full_name, id FROM fos_user WHERE full_name IN (".implode(',',$allowedBots).")) AS fos_user ON (fos_user.id = games.bot1 OR fos_user.id = games.bot2)
-    								WHERE
-    								datetime > UNIX_TIMESTAMP(NOW() - INTERVAL $winRateChartYears YEAR)
-    								AND ((result = 2 AND bot1=fos_user.id) OR (result = 1 AND bot2=fos_user.id))
-    										GROUP BY
-    										DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m'),
-    										full_name
-    										ORDER BY DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m') ASC
-    										";
-    
-    										$res = mysql_query($q);
-    										while ($line = mysql_fetch_assoc($res)) {
-    										if (!in_array($line['month'],$months)) $months[] = $line['month'];
-    										if (!in_array($line['full_name'],$bots)) $bots[] = $line['full_name'];
-    										if (!array_key_exists($line['month'],$results)) $results[$line['month']] = array();
-    										if (!array_key_exists($line['full_name'],$results[$line['month']])) $results[$line['month']][$line['full_name']] = array("wins" => 0,"losses" => 0);
-    						$results[$line['month']][$line['full_name']]["losses"] = intval($line['game_count']);
-    					}
-    
-    					// chart: 1st row
-    					echo "['Month', ";
-    					$pieces = array();
-    					foreach ($bots as $bot) {
-    						$pieces[] = "{label: '".$bot."', type: 'number'}";
-    					}
-    					echo implode(", ",$pieces)."], \n";
-    
-    					// chart: remaining rows
-    					foreach ($months as $month) {
-    						echo "['".substr($month,4,2)."-".substr($month,2,2)."', ";
-    						$pieces = array();
-    						foreach ($bots as $bot) {
-    							if (isset($results[$month][$bot]['wins']) || isset($results[$month][$bot]['losses'])) {
-    								// compute win rate
-    								$totalWinsLosses = 0;
-    								if (isset($results[$month][$bot]['wins'])) {
-    									$totalWinsLosses += $results[$month][$bot]['wins'];
-    									if (isset($results[$month][$bot]['losses'])) {
-    										$totalWinsLosses += $results[$month][$bot]['losses'];
-    										$winRate = $results[$month][$bot]['wins'] / ($results[$month][$bot]['wins']+$results[$month][$bot]['losses']);
-    									} else {
-    										$winRate = 1;
-    									}
-    								} else {
-    									if (isset($results[$month][$bot]['losses'])) $totalWinsLosses += $results[$month][$bot]['losses'];
-    									$winRate = 0;
-    								}
-    
-    								// ignore those months, where bot didn't play enough games
-    								if ($totalWinsLosses < $winRateChartMinGamesPerMonth) $winRate = "null";
-    
-    								$pieces[] = $winRate;
-    
-    							} else {
-    								$pieces[] = "null";
-    							}
-    						}
-    						echo implode(", ",$pieces)."], \n";
-    					}
-    
+
+  					$q = "
+							SELECT
+							DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m') AS month,
+							full_name,
+							COUNT(game_id) AS game_count,
+							result
+							FROM games JOIN (SELECT full_name, id FROM fos_user WHERE full_name IN (".implode(',',$allowedBots).")) AS fos_user
+							ON (fos_user.id = games.bot1 OR fos_user.id = games.bot2)
+							WHERE
+							datetime > UNIX_TIMESTAMP(NOW() - INTERVAL $winRateChartYears YEAR)
+							AND (result = 1 AND bot1=fos_user.id) OR (result = 2 AND bot2=fos_user.id)
+							GROUP BY
+							DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m'),
+							full_name,
+							result
+							ORDER BY DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m') ASC
+						";
+
+						$res = mysql_query($q);
+						while ($line = mysql_fetch_assoc($res)) {
+							if (!in_array($line['month'],$months)) $months[] = $line['month'];
+							if (!in_array($line['full_name'],$bots)) $bots[] = $line['full_name'];
+							if (!array_key_exists($line['month'],$results)) $results[$line['month']] = array();
+							if (!array_key_exists($line['full_name'],$results[$line['month']])) $results[$line['month']][$line['full_name']] = array("wins" => 0,"losses" => 0);
+
+							if ($line['result'] == 1) {
+							    $results[$line['month']][$line['full_name']]["wins"] = intval($line['game_count']);
+							} else {
+							    $results[$line['month']][$line['full_name']]["losses"] = intval($line['game_count']);
+							}
+						}
+
+  					// chart: 1st row
+  					echo "['Month', ";
+  					$pieces = array();
+  					foreach ($bots as $bot) {
+  						$pieces[] = "{label: '".$bot."', type: 'number'}";
+  					}
+  					echo implode(", ",$pieces)."], \n";
+
+  					// chart: remaining rows
+  					foreach ($months as $month) {
+  						echo "['".substr($month,4,2)."-".substr($month,2,2)."', ";
+  						$pieces = array();
+  						foreach ($bots as $bot) {
+  							if (isset($results[$month][$bot]['wins']) || isset($results[$month][$bot]['losses'])) {
+  								// compute win rate
+  								$totalWinsLosses = 0;
+  								if (isset($results[$month][$bot]['wins'])) {
+  									$totalWinsLosses += $results[$month][$bot]['wins'];
+  									if (isset($results[$month][$bot]['losses'])) {
+  										$totalWinsLosses += $results[$month][$bot]['losses'];
+  										$winRate = $results[$month][$bot]['wins'] / ($results[$month][$bot]['wins']+$results[$month][$bot]['losses']);
+  									} else {
+  										$winRate = 1;
+  									}
+  								} else {
+  									if (isset($results[$month][$bot]['losses'])) $totalWinsLosses += $results[$month][$bot]['losses'];
+  									$winRate = 0;
+  								}
+
+  								// ignore those months, where bot didn't play enough games
+  								if ($totalWinsLosses < $winRateChartMinGamesPerMonth) $winRate = "null";
+
+  								$pieces[] = $winRate;
+
+  							} else {
+  								$pieces[] = "null";
+  							}
+  						}
+  						echo implode(", ",$pieces)."], \n";
+  					}
     				?>
     	        ]);
     
@@ -256,18 +239,16 @@ if ($botId == null) {
                                   ['Map', 'Win Rate', { role: 'style' }],
                                   <?php
                                   $maps = array();
-                                  $qWins = "SELECT map, count(1) AS wins FROM `games` WHERE ((bot1=$botId AND result=1) OR (bot2=$botId AND result=2)) AND map != '' AND map != 'maps/sscai/(8)BGH.scm' GROUP BY map";
-                                  $qLosses = "SELECT map, count(1) AS losses FROM `games` WHERE ((bot2=$botId AND result=1) OR (bot1=$botId AND result=2)) AND map != '' AND map != 'maps/sscai/(8)BGH.scm' GROUP BY map";
-                                  $resWins = mysql_query($qWins);
-                                  while ($line = mysql_fetch_assoc($resWins)) {
-                                  	if (!isset($maps[$line['map']])) $maps[$line['map']] = array('wins'=>0.0,'losses'=>0.0);
-                                  	$maps[$line['map']]['wins'] = intval($line['wins']);
-                                  }
-                                  $resLosses = mysql_query($qLosses);
-                                  while ($line = mysql_fetch_assoc($resLosses)) {
-                                  	if (!isset($maps[$line['map']])) $maps[$line['map']] = array('wins'=>0.0,'losses'=>0.0);
-                                  	$maps[$line['map']]['losses'] = intval($line['losses']);
-                                  }
+																	$query = "SELECT map, SUM(CASE WHEN ((bot1=$botId AND result=1) OR (bot2=$botId AND result=2)) THEN 1 ELSE 0 END) AS wins, SUM(CASE WHEN ((bot1=$botId AND result=2) OR (bot2=$botId AND result=1)) THEN 1 ELSE 0 END) AS losses FROM `games` WHERE map != '' AND map != 'maps/sscai/(8)BGH.scm' GROUP BY map";
+																	$res = mysql_query($query);
+																	while ($line = mysql_fetch_assoc($res)) {
+																	    if (!isset($maps[$line['map']])) {
+																	        $maps[$line['map']] = array('wins' => 0, 'losses' => 0);
+																	    }
+																	    $maps[$line['map']]['wins'] = intval($line['wins']);
+																	    $maps[$line['map']]['losses'] = intval($line['losses']);
+																	}
+
                                   foreach ($maps as $k => $v) {
                                   	if ($maps[$k]['losses'] == 0) {
                                   		$mapWR = 1;
@@ -296,7 +277,7 @@ if ($botId == null) {
     		<div style="margin: 20px 0; padding-bottom: 20px; border-bottom: solid 1px gray;">
     			<div id="chart_maps" style="width: auto; height: 300px; "></div>
     		</div>
-    
+
     		<!--  Chart: Opponents and Win Rate -->
     		<script>
     			google.charts.load('current', {packages: ['corechart', 'bar']});
@@ -304,35 +285,39 @@ if ($botId == null) {
     
     			function drawColColors() {
     			  var data = google.visualization.arrayToDataTable([
-                                  ['Opponent', 'Win Rate', { role: 'style' }],
-                                  <?php
-                                  $opponents = array();
-                                  $qWins = "SELECT (CASE WHEN bot2 = $botId THEN (SELECT full_name FROM fos_user WHERE id=bot1) ELSE (SELECT full_name FROM fos_user WHERE id=bot2) END) AS opponent, count(1) AS wins FROM `games` WHERE ((bot1=$botId AND result=1) OR (bot2=$botId AND result=2)) GROUP BY opponent";
-                                  $qLosses = "SELECT (CASE WHEN bot2 = $botId THEN (SELECT full_name FROM fos_user WHERE id=bot1) ELSE (SELECT full_name FROM fos_user WHERE id=bot2) END) AS opponent, count(1) AS losses FROM `games` WHERE ((bot2=$botId AND result=1) OR (bot1=$botId AND result=2)) GROUP BY opponent";
-                                  $resWins = mysql_query($qWins);
-                                  while ($line = mysql_fetch_assoc($resWins)) {
-                                  	if (!isset($opponents[$line['opponent']])) $opponents[$line['opponent']] = array('wins'=>0.0,'losses'=>0.0);
-                                  	$opponents[$line['opponent']]['wins'] = intval($line['wins']);
-                                  }
-                                  $resLosses = mysql_query($qLosses);
-                                  while ($line = mysql_fetch_assoc($resLosses)) {
-                                  	if (!isset($opponents[$line['opponent']])) $opponents[$line['opponent']] = array('wins'=>0.0,'losses'=>0.0);
-                                  	$opponents[$line['opponent']]['losses'] = intval($line['losses']);
-                                  }
-                                  foreach ($opponents as $k => $v) {
-                                  	// skip opponents with too few games against us
-                                  	if (($opponents[$k]['wins']+$opponents[$k]['losses']) < $opponentChartMinGames) continue;
-                                  	if ($k == '') continue;
-    
-                                  	if ($opponents[$k]['losses'] == 0) {
-                                  		$opponentWR = 1;
-                                  	} else {
-                                  		$opponentWR = ($opponents[$k]['wins'] / ($opponents[$k]['wins']+$opponents[$k]['losses']));
-                                  	}
-                                  	echo "['".str_ireplace('maps/sscai/','',str_ireplace('.scm','',str_ireplace('.scx','',$k)))."', $opponentWR, 'color: #".getColorCodeFromString($k)."' ],\n";
-                                  }
-                                  ?>
-                             ]);
+	                ['Opponent', 'Win Rate', { role: 'style' }],
+	                <?php
+	                $opponents = array();
+	                $data = array();
+									$q = "SELECT (CASE WHEN bot2 = $botId THEN (SELECT full_name FROM fos_user WHERE id=bot1) ELSE (SELECT full_name FROM fos_user WHERE id=bot2) END) AS opponent,
+									      SUM(CASE WHEN ((bot1=$botId AND result=1) OR (bot2=$botId AND result=2)) THEN 1 ELSE 0 END) AS wins,
+									      SUM(CASE WHEN ((bot2=$botId AND result=1) OR (bot1=$botId AND result=2)) THEN 1 ELSE 0 END) AS losses
+									      FROM `games`
+									      GROUP BY opponent";
+									$res = mysql_query($q);
+									while ($line = mysql_fetch_assoc($res)) {
+									    if (!isset($opponents[$line['opponent']])) $opponents[$line['opponent']] = array('wins'=>0.0,'losses'=>0.0);
+									    $opponents[$line['opponent']]['wins'] = intval($line['wins']);
+									    $opponents[$line['opponent']]['losses'] = intval($line['losses']);
+									}
+									foreach ($opponents as $k => $v) {
+									    // skip opponents with too few games against us
+									    if (($opponents[$k]['wins']+$opponents[$k]['losses']) < $opponentChartMinGames) continue;
+									    if ($k == '') continue;
+									    if ($opponents[$k]['losses'] == 0) {
+									        $opponentWR = 1;
+									    } else {
+									        $opponentWR = ($opponents[$k]['wins'] / ($opponents[$k]['wins']+$opponents[$k]['losses']));
+									    }
+									    $data[] = "['".$k."', $opponentWR, 'color: #".getColorCodeFromString($k)."' ],\n";
+									}
+									if (empty($data)) {
+										echo "['',0,'color: #fff']";
+									} else {
+										foreach ($data as $d) echo $d;
+									}
+	                ?>
+	            ]);
     		      var options = {
     		        title: 'Win Rate by Opponent',
     		        backgroundColor: 'rgb(240,240,240)',
