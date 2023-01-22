@@ -87,39 +87,40 @@
 				<div id="streamNews">
 					<div id="news_wrapper">News:</div>
 						<!-- Twitter Feed Start -->
-						<a height="250" width="275" aria-polite="assertive" data-chrome="nofooter noscrollbar noheader transparent" data-border-color="#000000" class="twitter-timeline"  href="https://twitter.com/sscaitournament"
-						data-widget-id="352358187019694081">Tweets by @sscaitournament</a>
-						<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-						<script>
-						// customize the Twitter feed
-						function customizeTwitterFeed() {
-						    setTimeout( function() {
-						    	var iframe = document.getElementById('twitter-widget-0');
-						    	iframe.style.margin="0px";
-						    	var tweets = iframe.contentDocument.getElementsByClassName('timeline-Tweet');
-						    	Array.prototype.forEach.call(tweets, function(el) {
-						    		el.style.paddingLeft = "10px";
-						    		el.style.paddingRight = "5px";
-						    		el.style.paddingTop = "5px";
-						    		el.style.paddingBottom = "3px";
-						    		el.style.color = "#AAAAAA";
-						    	});
-
-						    }, 1500);
-						}
-						customizeTwitterFeed();
-						</script>
+						<div id="twitter-widget"></div>
+					    <script>
+					      window.twttr = (function(d, s, id) {
+					        var js, fjs = d.getElementsByTagName(s)[0],
+					          t = window.twttr || {};
+					        if (d.getElementById(id)) return t;
+					        js = d.createElement(s);
+					        js.id = id;
+					        js.src = "https://platform.twitter.com/widgets.js";
+					        fjs.parentNode.insertBefore(js, fjs);
+					        t._e = [];
+					        t.ready = function(f) {
+					          t._e.push(f);
+					        };
+					        return t;
+					      }(document, "script", "twitter-wjs"));
+					    </script>
+					    <script>
+					      twttr.ready(function(twttr) {
+					        twttr.widgets.createTimeline({
+					          sourceType: "profile",
+					          screenName: "sscaitournament"
+					        }, document.getElementById("twitter-widget"), {
+					          width: "275",
+					          height: "275",
+					          chrome: "transparent noheader nofooter noscrollbar noborders",
+					          theme: "dark"
+					        });
+					      });
+					    </script>
 						<!-- Twitter Feed End -->
 				</div>
 			</div>
 		</div>
-		<!--
-		<div id="streamChat">
-			<iframe style="background-color: rgb(30,30,30); width: 100%; height: 180px;margin: 5px 0; padding: 0;"
-			src="https://restream.io/chat-app/v1/?theme=flat&alignment=top&msgOpacity=0&chatOpacity=0&scale=80&timeout=2&hideMessages=false&userId=689500&token=Zc5M7brl7ZRs57wVZQ3N"
-			frameborder="0"></iframe>
-		</div>
-		-->
 
 		</div>
 
