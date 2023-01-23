@@ -28,12 +28,6 @@ if ($contentsStr != null) {
 require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
 require_once '../settings_server.php';
 
-// get MySQL-sanitized version of all the GET parameters
-$get = array();
-foreach ($_GET as $k => $v) {
-	$get[$k] = $v;
-}
-
 function getName($id) {
     $stmt = $GLOBALS['mysqliConnection']->prepare("SELECT full_name FROM fos_user WHERE id = :id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -70,24 +64,24 @@ function getReplayLink($gameId, $bot1Name, $bot2Name) {
 	return null;
 }
 
-if (isset($get['page']) && is_numeric($get['page'])) {
-        $page = $get['page'];
+if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+        $page = $_GET['page'];
 } else {
         $page = 1;
 }
-if (isset($get['count']) && is_numeric($get['count'])) {
-        $count = min(1000,$get['count']);
+if (isset($_GET['count']) && is_numeric($_GET['count'])) {
+        $count = min(1000,$_GET['count']);
 } else {
         $count = 10;
 }
 $futureConditions = "";
-if (isset($get['future']) && (strtolower($get['future']) == "false" || $get['future'] == "0")) $futureConditions = "(result != 'unfinished' AND result != 'error')";
-if ((!isset($get['future'])) || ((isset($get['future']) && (strtolower($get['future']) == "true" || $get['future'] == "1")))) $futureConditions = "(result = 'unfinished' OR result = 'error')";
+if (isset($_GET['future']) && (strtolower($_GET['future']) == "false" || $_GET['future'] == "0")) $futureConditions = "(result != 'unfinished' AND result != 'error')";
+if ((!isset($_GET['future'])) || ((isset($_GET['future']) && (strtolower($_GET['future']) == "true" || $_GET['future'] == "1")))) $futureConditions = "(result = 'unfinished' OR result = 'error')";
 
-if (isset($get['bots'])) {
+if (isset($_GET['bots'])) {
 	$search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
     	$replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
-    	$botStr = str_replace($search, $replace, $get['bots']);
+    	$botStr = str_replace($search, $replace, $_GET['bots']);
 	$botConds = array();
 
 	foreach (explode(",",$botStr) as $bot) {
