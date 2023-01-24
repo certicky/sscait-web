@@ -282,11 +282,6 @@ function getWebPageContents($url)
     return $data;
 }
 
-function getNthKeyOfAssociativeArray(&$array, $index)
-{
-    return array_keys($array)[$index];
-}
-
 function getTextWithClickableLinks($s,$nofollow=false) {
     $bonusHTML = '';
     if ($nofollow) $bonusHTML = 'rel="nofollow"';
