@@ -26,12 +26,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
 require_once '../settings_server.php';
 include('../includes/getPortrait.php');
 
-// get MySQL-sanitized version of all the GET parameters
-$get = array();
-foreach ($_GET as $k => $v) {
-	$get[$k] = mysql_real_escape_string($v,$GLOBALS['mysqlConnection']);
-}
-
 // Function used to sort the array of bots by a certain key
 function aasort (&$array, $key) {
     $sorter=array();
@@ -48,16 +42,22 @@ function aasort (&$array, $key) {
 }
 
 // Return only one bot if 'bot' parameter is passed
-if (isset($get['bot'])) {
-	$botCond = "AND full_name='".urldecode($get['bot'])."'";
+if (isset($_GET['bot'])) {
+	$search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a", ";");
+	$replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z", "");
+	$botsStr = str_replace($search, $replace, urldecode($_GET['bot']));
+	$botCond = "AND full_name='".$botsStr."'";
 } else {
 	$botCond = "";
 }
 
 // Get all the confirmed bots
 $bots = array();
-$res = mysql_query("SELECT * FROM fos_user WHERE email_confirmed='1' $botCond;");
-while ($l = mysql_fetch_assoc($res)) {
+$stmt = $GLOBALS['mysqliConnection']->prepare("SELECT * FROM fos_user WHERE email_confirmed=:emailConfirmed $botCond;");
+$stmt->bindValue(':emailConfirmed', '1', PDO::PARAM_STR);
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+foreach ($results as $l) {
 	$name = $l['full_name'];
 	$school = $l['school'];
 	$student = $l['student'];
@@ -72,33 +72,49 @@ while ($l = mysql_fetch_assoc($res)) {
 	}
 	
 	if ($GLOBALS["eliminationBracketPhase"] == false) { // hide the results during elimination bracket phase
-    	$winRes =  mysql_query("SELECT count(game_id) FROM `games` WHERE ((bot1='".$l['id']."' AND result='1') or (bot2='".$l['id']."' AND result='2'))");
-    	$lossRes = mysql_query("SELECT count(game_id) FROM `games` WHERE ((bot1='".$l['id']."' AND result='2') or (bot2='".$l['id']."' AND result='1'))");
-    	$drawsRes = mysql_query("SELECT count(game_id) FROM `games` WHERE  result='draw' AND ((bot1='".$l['id']."') OR (bot2='".$l['id']."'))");
-    	$wins = mysql_fetch_row($winRes);
-    	$losses = mysql_fetch_row($lossRes);
-    	$draws = mysql_fetch_row($drawsRes);
-    	$winRecentRes =  mysql_query("SELECT count(game_id) FROM `games` WHERE (((bot1='".$l['id']."' AND result='1') or (bot2='".$l['id']."' AND result='2')) AND (datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".$recentGames.",1)  ))");
-    	$lossRecentRes = mysql_query("SELECT count(game_id) FROM `games` WHERE (((bot1='".$l['id']."' AND result='2') or (bot2='".$l['id']."' AND result='1')) AND (datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".($recentGames).",1) ))");
-    	$drawsRecentRes = mysql_query("SELECT count(game_id) FROM `games` WHERE  (result='draw' AND ((bot1='".$l['id']."') OR (bot2='".$l['id']."')) AND (datetime > (SELECT datetime FROM games WHERE (bot1='".$l['id']."' OR bot2='".$l['id']."') AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT ".$recentGames.",1)  ) )");
-    	$winsRecent = mysql_fetch_row($winRecentRes);
-    	$lossesRecent = mysql_fetch_row($lossRecentRes);
-    	$drawsRecent = mysql_fetch_row($drawsRecentRes);
+	    $stmt = $GLOBALS['mysqliConnection']->prepare("
+	    	SELECT
+			    (SELECT count(game_id) FROM `games` WHERE (bot1=:id AND result='1') or (bot2=:id AND result='2')) as wins,
+			    (SELECT count(game_id) FROM `games` WHERE (bot1=:id AND result='2') or (bot2=:id AND result='1')) as losses,
+			    (SELECT count(game_id) FROM `games` WHERE result='draw' AND (bot1=:id OR bot2=:id)) as draws,
+			    (SELECT count(game_id) FROM `games` WHERE
+			    	((bot1=:id AND result='1') or (bot2=:id AND result='2')) AND
+			    	(datetime > (SELECT datetime FROM games WHERE (bot1=:id OR bot2=:id) AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT 1)  ))
+			    		as winsRecent,
+			    (SELECT count(game_id) FROM `games` WHERE
+			    	((bot1=:id AND result='2') or (bot2=:id AND result='1')) AND
+			    	(datetime > (SELECT datetime FROM games WHERE (bot1=:id OR bot2=:id) AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT 1) ))
+			    		as lossesRecent,
+			    (SELECT count(game_id) FROM `games` WHERE
+			    	(result='draw' AND (bot1=:id OR bot2=:id)) AND
+			    	(datetime > (SELECT datetime FROM games WHERE (bot1=:id OR bot2=:id) AND (result IN('1','2','draw')) ORDER BY datetime DESC LIMIT 1) ))
+			    		as drawsRecent
+			FROM `games`");
+		$stmt->execute(array(':id' => $l['id']));
+		$result = $stmt->fetch();
+
+		$wins = $result['wins'];
+		$losses = $result['losses'];
+		$draws = $result['draws'];
+		$winsRecent = $result['winsRecent'];
+		$lossesRecent = $result['lossesRecent'];
+		$drawsRecent = $result['drawsRecent'];
+
 	} else {
-	    $wins = array(0); $losses = array(0); $draws = array(0);
-	    $winsRecent = array(0); $lossesRecent = array(0); $drawsRecent = array(0);
+	    $wins = 0; $losses = 0; $draws = 0;
+	    $winsRecent = 0; $lossesRecent = 0; $drawsRecent = 0;
 	}
     
-    if ($winsRecent[0]+$lossesRecent[0] != 0) {
-		$winRate = round(($winsRecent[0]/($winsRecent[0]+$lossesRecent[0]))*100,2);
+    if ($winsRecent+$lossesRecent != 0) {
+		$winRate = round(($winsRecent/($winsRecent+$lossesRecent))*100,2);
 	} else {
 		$winRate = 0;
 	}
-	if ($wins[0]+$losses[0]+$draws[0] <= $recentGames) $winRate = "not enough games";
-	$score = $wins[0]*3+$draws[0];
+	if ($wins+$losses+$draws <= 10) $winRate = "not enough games";
+	$score = $wins*3+$draws;
 	if (stripos($name,"(example)") !== FALSE) $score = "<span class=\"uncompetitive\">$score<br/>(uncompet.)</span>";
-	if ($wins[0]+$losses[0]+$draws[0] != 0) {
-		$avgScore = round(($wins[0]*3+$draws[0]*1)/(($wins[0]+$losses[0]+$draws[0])*3)*3,2);
+	if ($wins+$losses+$draws != 0) {
+		$avgScore = round(($wins*3+$draws*1)/(($wins+$losses+$draws)*3)*3,2);
 	} else {
 		$avgScore = 0;
 	}
@@ -112,29 +128,35 @@ while ($l = mysql_fetch_assoc($res)) {
 	// achievements
 	$achi = array();
 	$achiIndex = 0;
-	$achRes = mysql_query("SELECT achievements.type,title,text FROM achievements,achievement_texts WHERE bot_id='".$l['id']."' AND achievements.type=achievement_texts.type ORDER BY datetime DESC;");
-	while ($a = mysql_fetch_assoc($achRes)) {
-		$achiIndex += 1;
-		if ($achiIndex <= 2) {
-			$classStr = "achievement_icon";
-		} else {
-			$classStr = "achievement_icon achievement_icon_small";
-		}
-		$achi[] = $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/images/achievements/'.$a['type'].'.png';
+	$stmt = $GLOBALS['mysqliConnection']->prepare("SELECT achievements.type,title,text FROM achievements,achievement_texts WHERE bot_id=:botId AND achievements.type=achievement_texts.type ORDER BY datetime DESC;");
+	$stmt->bindValue(':botId', $l['id'], PDO::PARAM_INT);
+	$stmt->execute();
+	$achRes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	$achiIndex = 0;
+	foreach ($achRes as $a) {
+	    if ($achiIndex <= 2) {
+	        $classStr = "achievement_icon";
+	    } else {
+	        $classStr = "achievement_icon achievement_icon_small";
+	    }
+	    $achi[] = $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/images/achievements/'.$a['type'].'.png';
+	    $achiIndex++;
 	}
-	$port = getPortrait($race,$achRes); 
+
+	$port = getPortrait($race,$achRes);
 	$portSpl = explode('src=".',$port);
 	$portSpl = explode('"',$portSpl[1]);
-	$port = $GLOBALS["DOMAIN_WITHOUT_SLASH"].$portSpl[0];
-	
+	$port = $GLOBALS["DOMAIN_WITHOUT_SLASH"].$portSpl;
+
 	$binary = $GLOBALS["DOMAIN_WITHOUT_SLASH"]."/bot_binary.php?bot=".urlencode($name);
 	$bwapiDll = $GLOBALS["DOMAIN_WITHOUT_SLASH"]."/bot_binary.php?bot=".urlencode($name)."&bwapi_dll=true";
-	
 	$profileURL = $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/index.php?action=botDetails&bot='.urlencode($name);
-	
+	$achievementsNum = count($achRes);
+
 	// Insert the bot into array
 	$sortKey = $winRate;
-	$bots[] = array('name'=>$name,'portrait'=>$port,'race'=>$race,'wins'=>$wins[0],'losses'=>$losses[0],'draws'=>$draws[0],'score'=>$score,'avgScore'=>$avgScore,'winRate'=>$winRate,'achievements'=>$achi,'achievementsNum'=>mysql_num_rows($achRes),'division'=>$division,'status'=>$status,'description'=>$desc,'update'=>$update, 'botBinary'=>$binary, 'bwapiDLL'=>$bwapiDll, 'botType'=>$type, 'botProfileURL'=>$profileURL);
+	$bots[] = array('name'=>$name,'portrait'=>$port,'race'=>$race,'wins'=>$wins,'losses'=>$losses,'draws'=>$draws,'score'=>$score,'avgScore'=>$avgScore,'winRate'=>$winRate,'achievements'=>$achi,'achievementsNum'=>$achievementsNum,'division'=>$division,'status'=>$status,'description'=>$desc,'update'=>$update, 'botBinary'=>$binary, 'bwapiDLL'=>$bwapiDll, 'botType'=>$type, 'botProfileURL'=>$profileURL);
 }
 
 // Print it all out and save the cache

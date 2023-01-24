@@ -79,8 +79,8 @@ if (isset($_GET['future']) && (strtolower($_GET['future']) == "false" || $_GET['
 if ((!isset($_GET['future'])) || ((isset($_GET['future']) && (strtolower($_GET['future']) == "true" || $_GET['future'] == "1")))) $futureConditions = "(result = 'unfinished' OR result = 'error')";
 
 if (isset($_GET['bots'])) {
-	$search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
-    	$replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
+	$search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a", ";");
+    	$replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z", "");
     	$botStr = str_replace($search, $replace, $_GET['bots']);
 	$botConds = array();
 
