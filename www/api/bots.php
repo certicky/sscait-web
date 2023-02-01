@@ -144,11 +144,6 @@ foreach ($results as $l) {
 	    $achiIndex++;
 	}
 
-	$port = getPortrait($race,$achRes);
-	$portSpl = explode('src=".',$port);
-	$portSpl = explode('"',$portSpl[1]);
-	$port = $GLOBALS["DOMAIN_WITHOUT_SLASH"].$portSpl;
-
 	$binary = $GLOBALS["DOMAIN_WITHOUT_SLASH"]."/bot_binary.php?bot=".urlencode($name);
 	$bwapiDll = $GLOBALS["DOMAIN_WITHOUT_SLASH"]."/bot_binary.php?bot=".urlencode($name)."&bwapi_dll=true";
 	$profileURL = $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/index.php?action=botDetails&bot='.urlencode($name);
@@ -156,7 +151,7 @@ foreach ($results as $l) {
 
 	// Insert the bot into array
 	$sortKey = $winRate;
-	$bots[] = array('name'=>$name,'portrait'=>$port,'race'=>$race,'wins'=>$wins,'losses'=>$losses,'draws'=>$draws,'score'=>$score,'avgScore'=>$avgScore,'winRate'=>$winRate,'achievements'=>$achi,'achievementsNum'=>$achievementsNum,'division'=>$division,'status'=>$status,'description'=>$desc,'update'=>$update, 'botBinary'=>$binary, 'bwapiDLL'=>$bwapiDll, 'botType'=>$type, 'botProfileURL'=>$profileURL);
+	$bots[] = array('name'=>$name, 'race'=>$race,'wins'=>$wins,'losses'=>$losses,'draws'=>$draws,'score'=>$score,'avgScore'=>$avgScore,'winRate'=>$winRate,'achievements'=>$achi,'achievementsNum'=>$achievementsNum,'division'=>$division,'status'=>$status,'description'=>$desc,'update'=>$update, 'botBinary'=>$binary, 'bwapiDLL'=>$bwapiDll, 'botType'=>$type, 'botProfileURL'=>$profileURL);
 }
 
 // Print it all out and save the cache
