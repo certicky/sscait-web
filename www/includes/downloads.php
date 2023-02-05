@@ -14,8 +14,11 @@
 <ul>
 	<li><a target="_blank" href="https://github.com/certicky/sscait-tournamentmanager">SSCAIT Tournament Manager</a></li>
 	<li><a target="_blank" href="https://github.com/certicky/sscait-web">SSCAIT Web Frontent</a></a>
-   	<li><a target="_blank" href="https://github.com/certicky/sscait-tournamentmodule">SSCAIT Tournament Module DLL</a> including the automatic observer.</li>
+   	<li><a target="_blank" href="https://github.com/certicky/sscait-tournamentmodule">SSCAIT Tournament Module DLL</a> including the automated observer and automated commentator.</li>
+   	<li><a target="_blank" href="https://github.com/certicky/sscait-commentary">SSCAIT Commentary Generator</a> provides an AI-generated game commentary for the tournament module.</li>
 	<li><a href="http://docs.sscait.apiary.io/" target="_blank">API for SSCAIT server</a> provides live info about the Bots and Games on SSCAIT tournament server. You can use it to develop your own applications, tools or analytics.</li>
+
+
 </ul>
 </div>
 
