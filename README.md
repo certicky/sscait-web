@@ -12,12 +12,12 @@
 
 #### Installation
 
-* Install web server of your choice and PHP 7 or newer compatible version.
+* Install web server of your choice and PHP 7 or newer compatible version. PHP 8.2 seems to work. Ensure that php-zip is installed. For MySQL, ensure that php-mysqlnd is installed.
 * Make sure you have MySQL server up and running and that it contains the `sc` database and a user with all the required privileges.
   * You should already have the DB set up if you're using this in conjunction with https://github.com/certicky/sscait-tournamentmanager.
   * If you don't have the DB set up yet, create it and then run the `database.sql` to create required tables.
 * Clone this repository and update your webserver's settings so that the `www/index.php` from the repo is served by it.
-* Make a copy of `settings_server.php.template` and name it `settings_server.php`. Update the values inside like this:
+* Make a copy of `settings_server.php.template` to the `www` folder and name it `settings_server.php`. Update the values inside like this:
   * `$GLOBALS["ADMIN_EMAIL"]`: email to which the info emails are sent (your email)
   * `$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]`: folder containing the bots files - part of the set up of SSCAIT Tournament Manager
   * `$GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"]`: folder containing the saved replay files - part of the set up of SSCAIT Tournament Manager
