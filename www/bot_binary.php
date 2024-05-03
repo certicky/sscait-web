@@ -56,8 +56,7 @@ while ($line = mysql_fetch_assoc($res)) {
 		if (file_exists(dirname($file).'/BWAPI.dll')) {
 			serveFile(dirname($file).'/BWAPI.dll');
 		} else {
-		    // if not found, serve the default (version 3.7.5)
-		    serveFile('/home/certicky/Server/server_requirements/BWAPI_versions/5e590ea55c2d3c66a36bf75537f8655a/BWAPI.dll');
+			exit;
 		}
 	}
 
