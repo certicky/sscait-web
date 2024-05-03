@@ -30,10 +30,10 @@ class ZipArchivePlus extends ZipArchive
 // escape bot name parameter
 $botName = mysql_real_escape_string(urldecode($_GET['bot']),$GLOBALS['mysqlConnection']);
 
-function serveFile($file) {
+function serveFile($file, $suffix = '') {
 	header('Content-Description: File Transfer');
 	header('Content-Type: application/octet-stream');
-	header('Content-Disposition: attachment; filename="'.basename($file).'"');
+	header('Content-Disposition: attachment; filename="'.basename($file).$suffix.'"');
 	header('Content-Transfer-Encoding: binary');
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -42,7 +42,6 @@ function serveFile($file) {
 	ob_clean();
 	flush();
 	readfile($file);
-	exit;
 }
 
 // get bot ID
@@ -55,18 +54,17 @@ while ($line = mysql_fetch_assoc($res)) {
 	if (isset($_GET['bwapi_dll']) && $_GET['bwapi_dll'] == 'true') {
 		if (file_exists(dirname($file).'/BWAPI.dll')) {
 			serveFile(dirname($file).'/BWAPI.dll');
-		} else {
-			exit;
 		}
+		exit;
 	}
 
 	// serve the bot binary file
 	if (file_exists($file)) {
 
 		// Prepare the ZIP File
-		$zipfile = tempnam("tmp",str_replace(" ","_",$name)."_").".zip";
+		$tmpfile = tempnam("tmp",str_replace(" ","_",$name)."_");
 		$zip = new ZipArchivePlus();
-		$zip->open($zipfile, ZipArchive::CREATE);
+		$zip->open($tmpfile, ZipArchive::CREATE);
 
 		// Stuff with content (all the files from bwapi-data/AI folder, minus bwapi.dll)
 		if ($handle = opendir(dirname($file))) {
@@ -88,10 +86,10 @@ while ($line = mysql_fetch_assoc($res)) {
 
 		// Close the archive and send to users
 		$zip->close();
-		serveFile($zipfile);
+		serveFile($tmpfile, '.zip');
 
 		// Delete temporary ZIP archive
-		unlink($zipfile);
+		unlink($tmpfile);
 
 	} else {
 		exit;
