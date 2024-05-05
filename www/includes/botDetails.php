@@ -94,7 +94,16 @@ if ($botId == null) {
 			<tr><td>Wins:</td><td><?php echo $wins; ?></td></tr>
 			<tr><td>Losses:</td><td><?php echo $losses; ?></td></tr>
 			<tr><td>Draws:</td><td><?php echo $draws; ?></td></tr>
-			<tr><td>Total Win Rate:</td><td><b><?php echo (intval($wins) / (intval($wins)+intval($losses)+intval($draws))); ?></b></td></tr>
+			<tr><td>Total Win Rate:</td><td><b>
+			<?php
+				$total = intval($wins)+intval($losses)+intval($draws);
+				if ($total == 0) {
+					echo intval(0);
+				} else {
+					echo (intval($wins) / intval($total));
+				}
+			?>
+			</b></td></tr>
       <tr><td>Achievements:</td><td><?php echo $achi; ?></td></tr>
 		</table>
 
