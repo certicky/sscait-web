@@ -55,11 +55,17 @@ function getBotId($name) {
 function getReplayLink($gameId, $bot1Name, $bot2Name) {
 	$paddedGameId = str_pad($gameId, 4, '0', STR_PAD_LEFT);
 
-	foreach (scandir($GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"].'/'.strtoupper($bot1Name)) as $fname) {
-		if (strpos($fname, $paddedGameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot1Name).'/'.$fname;
+	$bot1Dir = $GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"].'/'.strtoupper($bot1Name);
+	if (is_dir($bot1Dir) && is_readable($bot1Dir)) {
+		foreach (scandir($bot1Dir) as $fname) {
+			if (strpos($fname, $paddedGameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot1Name).'/'.$fname;
+		}
 	}
-	foreach (scandir($GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"].'/'.strtoupper($bot2Name)) as $fname) {
-		if (strpos($fname, $paddedGameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot2Name).'/'.$fname;
+	$bot2Dir = $GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"].'/'.strtoupper($bot2Name);
+	if (is_dir($bot2Dir) && is_readable($bot2Dir)) {
+		foreach (scandir($bot2Dir) as $fname) {
+			if (strpos($fname, $paddedGameId.'-') === 0) return $GLOBALS["DOMAIN_WITHOUT_SLASH"].'/Replays/'.strtoupper($bot2Name).'/'.$fname;
+		}
 	}
 	return null;
 }
