@@ -407,11 +407,11 @@ foreach ($bots as $bot) {
 </table>
 </div>
 
-<?php
+<?php /*
 if (!empty($eloRatingsRemoteURL)) {
     ?>
     <hr>
     <div>*Note: <?php echo($eloRatingsNote); ?></div>
     <?php
 }
-?>
+*/ ?>
