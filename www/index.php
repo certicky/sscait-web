@@ -168,7 +168,6 @@ if (isset($_GET['action']) && ($_GET['action'] == 'botDetails') && isset($_GET['
                 "blog",
                 "tutorial",
                 "tutorialCpp",
-                "results",
                 "scores",
                 "scoresCompetitive",
                 "downloads",
