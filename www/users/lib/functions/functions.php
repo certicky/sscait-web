@@ -115,7 +115,7 @@ function checkLogin ( $levels )
 		session_start ();
 		$kt = explode ( ' ', $levels );
 
-		if ( ! $_SESSION['logged_in'] ) {
+		if ( !isset($_SESSION['logged_in']) ) {
 
 			$access = FALSE;
 
