@@ -20,7 +20,7 @@ function sendMailFromGmail($recipients,$subj,$mess,$title) {
         /* Create the mail object using the Mail::factory method */
         $mail_object = Mail::factory("smtp", $smtpinfo);
         /* Ok send mail */
-	if ($mail_object->send($recipients, $headers, $mailmsg)){
+	if (!PEAR::isError($mail_object->send($recipients, $headers, $mailmsg))){
 		return TRUE;
 	} else {
 		return FALSE;			
