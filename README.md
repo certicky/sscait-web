@@ -13,6 +13,7 @@
 #### Installation
 
 * Install web server of your choice and PHP 7 or newer compatible version. PHP 8.2 seems to work. Ensure that php-zip is installed. For MySQL, ensure that php-mysqlnd is installed.
+* Install composer.
 * Make sure you have MySQL server up and running and that it contains the `sc` database and a user with all the required privileges.
   * You should already have the DB set up if you're using this in conjunction with https://github.com/certicky/sscait-tournamentmanager.
   * If you don't have the DB set up yet, create it and then run the `database.sql` to create required tables.
@@ -24,6 +25,8 @@
   * `$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"]`: folder reserved for data caching - just create an empty folder and give web server user the read & write permissions
   * `$db_host`, `$db_username`, `$db_password`: database credentials
   * `$GLOBALS["SMTP_*"]`: credentials for whatever external SMTP service we're using to send emails to bot authors and to admin (e.g. https://www.sendinblue.com/)
+* Change the working directory to the directory that your webserver serves the website from, then run composer to download the dependencies `phpmailer/phpmailer` and `league/oauth2-google` (which are necessary for the website to send emails using the Gmail API), e.g.:
+  * `cd /var/www/html/`
+  * `composer require phpmailer/phpmailer`
+  * `composer require league/oauth2-google`
 * If everything went well, the web should be accessible at a location determined by your web server - usually `http://localhost/` or `http://localhost:8080`.
-
-

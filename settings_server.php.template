@@ -15,11 +15,11 @@ if (!isset($_SERVER["SERVER_NAME"])) {
 //======================================================================
 // GENERAL SETTINGS
 //======================================================================
-$GLOBALS["ADMIN_EMAIL"] = 'admin@email.com';
+$GLOBALS["ADMIN_EMAIL"] = 'sscait+sscait-web-admin@gmail.com';
 $GLOBALS["DOMAIN_WITHOUT_SLASH"] = "http://".trim($_SERVER['SERVER_NAME'],"/");
-$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"] = '/absolute/path/to/folder/with/the/Bots';
+$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"] = '/var/www/sscait-web/bots';
 $GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"] = '/var/www/html/Replays';
-$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"] = '/var/www/html/cache';
+$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"] = '/var/www/sscait-web/cache';
 
 //======================================================================
 // MAIN WEBSITE SETTINGS
@@ -32,8 +32,8 @@ if (!defined("DOMAIN")) define("DOMAIN",$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]);
 //======================================================================
 $db_host = 'localhost';
 $db_database = 'sc';
-$db_username = 'sc-database-user';
-$db_password = 'password-for-the-user';
+$db_username = 'enter-sc-database-user-here';
+$db_password = 'enter-password-for-the-db_username_user-here';
 
 // old PHP5-style connection (deprecated; TODO: remove once all the calls are replaced with the PDO implementation)
 $GLOBALS['mysqlConnection'] = mysql_connect($db_host,$db_username,$db_password);
@@ -51,11 +51,13 @@ try {
 // EMAILS
 //======================================================================
 $smtpinfo = array();
-$GLOBALS["SMTP_HOST"] = "smtp.some-smtp-server.com";
+$GLOBALS["SMTP_HOST"] = "smtp.gmail.com";
 $GLOBALS["SMTP_PORT"] = "587";
 $GLOBALS["SMTP_AUTH"] = true;
-$GLOBALS["SMTP_USERNAME"] = "smtp-server-account";
-$GLOBALS["SMTP_PASSWORD"] = "smtp-server-password";
+$GLOBALS["SMTP_USERNAME"] = "enter-smtp-server-account-here-eg-sscait@gmail.com";
+$GLOBALS["SMTP_GOOGLE_CLIENT_ID"] = "enter-google-client-id-here";
+$GLOBALS["SMTP_GOOGLE_CLIENT_SECRET"] = "enter-google-client-secret-here";
+$GLOBALS["SMTP_GOOGLE_REFRESH_TOKEN"] = "enter-google-refresh-token-here";
 
 //======================================================================
 // ELO ratings remote url
