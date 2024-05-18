@@ -37,5 +37,5 @@
   * `sudo cat /var/log/mysqld.log | grep -v " \[Note\] " | less`
   * `sudo cat /var/log/php-fpm/www-error.log | grep -v " PHP Notice: " | less`
   * `sudo cat /var/log/php-fpm/error.log | grep -v " NOTICE: " | less`
-  * `sudo cat /var/log/httpd/error_log | grep -v "[:]\(debug\|notice\|info\)" | less`
+  * `sudo cat /var/log/httpd/error_log | grep -v "[:]\(debug\|notice\|info\)" | grep -v -e " \(AH01797\|AH01630\): client denied by server configuration: " -e " AH10244: invalid URI path " -e " AH01276: Cannot serve directory .*: No matching DirectoryIndex .* found, and server-generated directory index forbidden by Options directive" | less`
   * `sudo cat /var/log/httpd/access_log | less` to see the details of every request. I also added some extra columns to each `LogFormat` in `/etc/httpd/conf/httpd.conf`, e.g. `%T` (the time taken to serve the request, in seconds) and `port:%p` (the canonical port of the server serving the request). If you add the `%T` column, you can use e.g. `grep` to filter on requests that have a high time taken to serve the request.
