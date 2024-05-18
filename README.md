@@ -19,12 +19,12 @@
   * If you don't have the DB set up yet, create it and then run the `database.sql` to create required tables.
 * Clone this repository and update your webserver's settings so that the `www/index.php` from the repo is served by it.
 * Make a copy of `settings_server.php.template` to the `www` folder and name it `settings_server.php`. Update the values inside like this:
-  * `$GLOBALS["ADMIN_EMAIL"]`: email to which the info emails are sent (your email)
-  * `$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]`: folder containing the bots files - part of the set up of SSCAIT Tournament Manager. **Warning**: there should not be a path to this directory within the directory (or directories) served by your webserver, otherwise everyone could download files from every bot's `read` and `write` folders etc without logging in.
-  * `$GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"]`: folder containing the saved replay files - part of the set up of SSCAIT Tournament Manager. Note: if there is no path to this directory within the directory (or directories) served by your webserver at relative path `Replays`, links in web pages to replay files won't work. E.g. if the directory is `/var/www/html/Replays` it would work.
-  * `$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"]`: folder reserved for data caching - just create an empty folder and give web server user the read & write permissions
+  * `$GLOBALS['ADMIN_EMAIL']`: email to which the info emails are sent (your email)
+  * `$GLOBALS['BOTS_FOLDER_WITHOUT_SLASH']`: folder containing the bots files - part of the set up of SSCAIT Tournament Manager. **Warning**: there should not be a path to this directory within the directory (or directories) served by your webserver, otherwise everyone could download files from every bot's `read` and `write` folders etc without logging in.
+  * `$GLOBALS['REPLAYS_FOLDER_WITHOUT_SLASH']`: folder containing the saved replay files - part of the set up of SSCAIT Tournament Manager. Note: if there is no path to this directory within the directory (or directories) served by your webserver at relative path `Replays`, links in web pages to replay files won't work. E.g. if the directory is `/var/www/html/Replays` it would work.
+  * `$GLOBALS['CACHE_FOLDER_WITHOUT_SLASH']`: folder reserved for data caching - just create an empty folder and give web server user the read & write permissions
   * `$db_host`, `$db_username`, `$db_password`: database credentials
-  * `$GLOBALS["SMTP_*"]`: credentials for whatever external SMTP service we're using to send emails to bot authors and to admin (e.g. https://www.sendinblue.com/)
+  * `$GLOBALS['SMTP_*']`: credentials for whatever external SMTP service we're using to send emails to bot authors and to admin (e.g. https://www.sendinblue.com/)
 * Change the working directory to the directory for the parts of the website that your webserver does not serve, then run composer to download the dependencies `phpmailer/phpmailer` and `league/oauth2-google` (which are necessary for the website to send emails using the Gmail API), e.g.:
   * `cd /var/www/sscait-web/`
   * `composer require phpmailer/phpmailer`
