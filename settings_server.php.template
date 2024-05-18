@@ -3,29 +3,29 @@
 include_once($_SERVER['DOCUMENT_ROOT'] . '/includes/fix_mysql.php');
 
 // in the case of forwarded remote IPs
-if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-    $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
 }
 
 // in the case when run via the CLI
-if (!isset($_SERVER["SERVER_NAME"])) {
+if (!isset($_SERVER['SERVER_NAME'])) {
     $_SERVER['SERVER_NAME'] = '';
 }
 
 //======================================================================
 // GENERAL SETTINGS
 //======================================================================
-$GLOBALS["ADMIN_EMAIL"] = 'sscait+sscait-web-admin@gmail.com';
-$GLOBALS["DOMAIN_WITHOUT_SLASH"] = "http://".trim($_SERVER['SERVER_NAME'],"/");
-$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"] = '/var/www/sscait-web/bots';
-$GLOBALS["REPLAYS_FOLDER_WITHOUT_SLASH"] = '/var/www/html/Replays';
-$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"] = '/var/www/sscait-web/cache';
+$GLOBALS['ADMIN_EMAIL'] = 'sscait+sscait-web-admin@gmail.com';
+$GLOBALS['DOMAIN_WITHOUT_SLASH'] = 'http://'.trim($_SERVER['SERVER_NAME'],'/');
+$GLOBALS['BOTS_FOLDER_WITHOUT_SLASH'] = '/var/www/sscait-web/bots';
+$GLOBALS['REPLAYS_FOLDER_WITHOUT_SLASH'] = '/var/www/html/Replays';
+$GLOBALS['CACHE_FOLDER_WITHOUT_SLASH'] = '/var/www/sscait-web/cache';
 
 //======================================================================
 // MAIN WEBSITE SETTINGS
 //======================================================================
-if (!defined("PAGE_TITLE")) define("PAGE_TITLE","[SSCAIT] Student StarCraft AI Tournament &amp; Ladder");
-if (!defined("DOMAIN")) define("DOMAIN",$GLOBALS["BOTS_FOLDER_WITHOUT_SLASH"]);
+if (!defined('PAGE_TITLE')) define('PAGE_TITLE','[SSCAIT] Student StarCraft AI Tournament &amp; Ladder');
+if (!defined('DOMAIN')) define('DOMAIN',$GLOBALS['BOTS_FOLDER_WITHOUT_SLASH']);
 
 //======================================================================
 // DATABASE
@@ -38,26 +38,26 @@ $db_password = 'enter-password-for-the-db_username_user-here';
 // old PHP5-style connection (deprecated; TODO: remove once all the calls are replaced with the PDO implementation)
 $GLOBALS['mysqlConnection'] = mysql_connect($db_host,$db_username,$db_password);
 @mysql_select_db($db_database) or
-    die("<div>Unable to connect to database.</div>");
+    die('<div>Unable to connect to database.</div>');
 
 // more recent, PHP7+ style connection
 try {
     $GLOBALS['mysqliConnection'] = new PDO("mysql:host=$db_host;dbname=$db_database", $db_username, $db_password);
 } catch (PDOException $e) {
-    die("<div>Error connecting to database: " . $e->getMessage() . "</div>");
+    die('<div>Error connecting to database: ' . $e->getMessage() . '</div>');
 }
 
 //======================================================================
 // EMAILS
 //======================================================================
 $smtpinfo = array();
-$GLOBALS["SMTP_HOST"] = "smtp.gmail.com";
-$GLOBALS["SMTP_PORT"] = "587";
-$GLOBALS["SMTP_AUTH"] = true;
-$GLOBALS["SMTP_USERNAME"] = "enter-smtp-server-account-here-eg-sscait@gmail.com";
-$GLOBALS["SMTP_GOOGLE_CLIENT_ID"] = "enter-google-client-id-here";
-$GLOBALS["SMTP_GOOGLE_CLIENT_SECRET"] = "enter-google-client-secret-here";
-$GLOBALS["SMTP_GOOGLE_REFRESH_TOKEN"] = "enter-google-refresh-token-here";
+$GLOBALS['SMTP_HOST'] = 'smtp.gmail.com';
+$GLOBALS['SMTP_PORT'] = '587';
+$GLOBALS['SMTP_AUTH'] = true;
+$GLOBALS['SMTP_USERNAME'] = 'enter-smtp-server-account-here-eg-sscait@gmail.com';
+$GLOBALS['SMTP_GOOGLE_CLIENT_ID'] = 'enter-google-client-id-here';
+$GLOBALS['SMTP_GOOGLE_CLIENT_SECRET'] = 'enter-google-client-secret-here';
+$GLOBALS['SMTP_GOOGLE_REFRESH_TOKEN'] = 'enter-google-refresh-token-here';
 
 //======================================================================
 // ELO ratings remote url
