@@ -25,8 +25,9 @@
   * `$GLOBALS["CACHE_FOLDER_WITHOUT_SLASH"]`: folder reserved for data caching - just create an empty folder and give web server user the read & write permissions
   * `$db_host`, `$db_username`, `$db_password`: database credentials
   * `$GLOBALS["SMTP_*"]`: credentials for whatever external SMTP service we're using to send emails to bot authors and to admin (e.g. https://www.sendinblue.com/)
-* Change the working directory to the directory that your webserver serves the website from, then run composer to download the dependencies `phpmailer/phpmailer` and `league/oauth2-google` (which are necessary for the website to send emails using the Gmail API), e.g.:
-  * `cd /var/www/html/`
+* Change the working directory to the directory for the parts of the website that your webserver does not serve, then run composer to download the dependencies `phpmailer/phpmailer` and `league/oauth2-google` (which are necessary for the website to send emails using the Gmail API), e.g.:
+  * `cd /var/www/sscait-web/`
   * `composer require phpmailer/phpmailer`
   * `composer require league/oauth2-google`
+  * Note: `get_oauth_token.php` currently uses a hardcoded path to under `/var/www/sscait-web/` - if you are using a different path, edit the path in `get_oauth_token.php`.
 * If everything went well, the web should be accessible at a location determined by your web server - usually `http://localhost/` or `http://localhost:8080`.
