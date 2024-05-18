@@ -5,7 +5,7 @@
 	<li><span class="category">Discord <b>(primary, fastest)</b>:</span> SC AI <a href="https://discordapp.com/invite/w9wRRrF">Discord chat server</a> </li>
 	<li><span class="category">Facebook:</span> <a target="_blank" href="http://www.facebook.com/groups/bwapi/">StarCraft AI</a> group on FB</li>
 	<!--<li><span class="category">IRC:</span> <a target="_blank" href="http://webchat.freenode.net/?channels=BWAPI">freenode IRC channel #BWAPI</a></li>-->
-	<li><span class="category">Admin:</span> <a href="mailto:certicky@gmail.com">certicky@gmail.com</a></li>
+	<li><span class="category">Admin:</span> <a href="mailto:sscait+sscait-web-admin@gmail.com">sscait+sscait-web-admin@gmail.com</a></li>
 </ul>
 </div>
 
@@ -21,7 +21,9 @@
 
 <p>
 	<!-- <td colspan="2"><a href="http://gas.fel.cvut.cz/" target="_blank"><img style="width: 200px; height: 200px; border: none;" src="./images/gas-logo.png" alt="" /></a></td> -->
-	SSCAIT tournament &amp; ladder is independently organized by its founder <a href="https://certicky.github.io/" target="_blank">Michal Čertický</a> with the help of the StarCrat AI community members.
+	SSCAIT tournament &amp; ladder was founded and independently maintained by <a href="https://certicky.github.io/" target="_blank">Michal Čertický</a> with the help of the StarCrat AI community members.
+	<br />
+	It is now independently maintained by <a href="https://github.com/chriscoxe/" target="_blank">Chris Coxe</a>.
 	<br />
 	In the past, it was also maintained by <b>Games &amp; Simulations Research Group</b> at Artificial Intelligence Center, Czech Technical University in Prague.
 	<!--<li>See what they do and contact them here: <a target="_blank" href="http://gas.fel.cvut.cz/">G&amp;S homepage</a></li>-->
