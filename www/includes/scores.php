@@ -19,7 +19,7 @@ window.location=\'http://sscaitournament.com/index.php?action=scoresCompetitive\
 include("./includes/getReplayURL.php");
 
 // cache settings
-$cachePath = "/tmp/_cache_score.html";
+$cachePath = $GLOBALS['CACHE_FOLDER_WITHOUT_SLASH'].'/_cache_score.html';
 // how many minutes is the cache relevant
 $cacheRenewMinutes = 4;
 
