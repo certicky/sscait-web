@@ -338,7 +338,8 @@ function extractZip($zipFile,$destination) {
 function getFileByExtension($folder,$extension) {
 	if ($handle = opendir($folder)) {
 		while (false !== ($entry = readdir($handle))) {
-			$ext = strtolower(end(explode('.', $entry)));
+			$strings = explode('.', $entry);
+			$ext = strtolower(end($strings));
 			if ($ext==strtolower($extension) && ($entry != "BWAPI.dll")) {
 				return $entry;
 				break;
