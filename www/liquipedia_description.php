@@ -73,11 +73,12 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
 
     $cacheAgeWeeksMin = 1;
     $cacheAgeWeeksMax = 12;
+    $liquipedia_last_request_time_file = $GLOBALS['CACHE_FOLDER_WITHOUT_SLASH'].'/liquipedia_last_request_time';
 
     for ($cacheAgeWeeks = $cacheAgeWeeksMin; $cacheAgeWeeks <= $cacheAgeWeeksMax; $cacheAgeWeeks++) {
 
         $contentsStr = $cache->get($key, 60*60*24*7 * $cacheAgeWeeks);
-        $lastRequestTime = intval(trim(file_get_contents('./liquipedia_last_request_time')));
+        $lastRequestTime = intval(trim(file_get_contents($liquipedia_last_request_time_file)));
         $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only one request every few minutes to avoid being blocked by Liquipedia
         if ($contentsStr != null) {
             $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following content from Liquipedia is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old.</div>'.$contentsStr;
@@ -87,7 +88,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
         // if needed and allowed, get the fresh content from liquipedia
         if ($contentsStr == null && $nextRequestAllowed) {
 
-            file_put_contents('./liquipedia_last_request_time', time());
+            file_put_contents($liquipedia_last_request_time_file, time());
             $urlRes = getLiquipediaUrl($botName);
             $liqUrl = $urlRes["result"];
             if ($liqUrl !== null) {
