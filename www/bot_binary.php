@@ -3,37 +3,15 @@
 // DB connection & other settings
 //===============================================
 require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
-
-// extended class ZipArchive that can recursively add folders
-class ZipArchivePlus extends ZipArchive
-{
-    public function addDir($location, $name)
-    {
-        $this->addEmptyDir($name);
-        $this->addDirDo($location, $name);
-    }
-    private function addDirDo($location, $name)
-    {
-        $name .= '/';
-        $location .= '/';
-        $dir = opendir ($location);
-        while ($file = readdir($dir))
-        {
-            if ($file == '.' || $file == '..') continue;
-            $do = (filetype( $location . $file) == 'dir') ? 'addDir' : 'addFile';
-            $this->$do($location . $file, $name . $file);
-        }
-    }
-}
-
+require_once $_SERVER['DOCUMENT_ROOT'].'/users/lib/functions/functions.php';
 
 // escape bot name parameter
 $botName = mysql_real_escape_string(urldecode($_GET['bot']),$GLOBALS['mysqlConnection']);
 
-function serveFile($file, $suffix = '') {
+function serveFile($file, $filename = '') {
 	header('Content-Description: File Transfer');
 	header('Content-Type: application/octet-stream');
-	header('Content-Disposition: attachment; filename="'.basename($file).$suffix.'"');
+	header('Content-Disposition: attachment; filename="'.($filename == '' ? basename($file) : $filename).'"');
 	header('Content-Transfer-Encoding: binary');
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -60,37 +38,22 @@ while ($line = mysql_fetch_assoc($res)) {
 
 	// serve the bot binary file
 	if (file_exists($file)) {
-
-		// Prepare the ZIP File
-		$tmpfile = tempnam("tmp",str_replace(" ","_",$name)."_");
-		$zip = new ZipArchivePlus();
-		$zip->open($tmpfile, ZipArchive::CREATE);
-
-		// Stuff with content (all the files from bwapi-data/AI folder, minus bwapi.dll)
-		if ($handle = opendir(dirname($file))) {
-			while (false !== ($fileInFolder = readdir($handle))) {
-				if ('.' === $fileInFolder) continue;
-				if ('..' === $fileInFolder) continue;
-				if ('bwapi.dll' === strtolower($fileInFolder)) continue;
-
-
-				// add the file to the archive
-				if (is_dir(dirname($file).'/'.$fileInFolder)) {
-				    $zip->addDir(dirname($file).'/'.$fileInFolder, $fileInFolder);
-				} else {
-				    $zip->addFile(dirname($file).'/'.$fileInFolder, $fileInFolder);
-				}
+		$dir = dirname($file);
+		if (!file_exists($dir.'.zip')) {
+			if (file_exists($dir.'.tempDownload.zip')) {
+				unlink($dir.'.tempDownload.zip');
 			}
-			closedir($handle);
+			// create the bot binary ZIP file if it doesn't exist
+			requireBotBinaryZipFile($dir,$dir.'.tempDownload.zip');
+			// check whether a different request already finished creating it since we last checked
+			if (!file_exists($dir.'.zip')) {
+				rename($dir.'.tempDownload.zip',$dir.'.zip');
+			} else {
+				// clean up (we will serve the other file instead)
+				unlink($dir.'.tempDownload.zip');
+			}
 		}
-
-		// Close the archive and send to users
-		$zip->close();
-		serveFile($tmpfile, '.zip');
-
-		// Delete temporary ZIP archive
-		unlink($tmpfile);
-
+		serveFile($dir.'.zip',$name.'.zip');
 	} else {
 		exit;
 	}

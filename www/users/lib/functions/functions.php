@@ -393,6 +393,88 @@ function chmod_R($path, $filemode, $dirmode) {
     }
 }
 
+// extended class ZipArchive that can recursively add folders
+class ZipArchivePlus extends ZipArchive
+{
+    public function addDir($location, $name)
+    {
+        $this->addEmptyDir($name);
+        $this->addDirDo($location, $name);
+    }
+    private function addDirDo($location, $name)
+    {
+        $name .= '/';
+        $location .= '/';
+        $dir = opendir ($location);
+        while ($file = readdir($dir))
+        {
+            if ($file == '.' || $file == '..') continue;
+            $do = (filetype( $location . $file) == 'dir') ? 'addDir' : 'addFile';
+            $this->$do($location . $file, $name . $file);
+        }
+    }
+}
+
+//----------Function for creating a ZIP file of the bot's AI folder if it doesn't already exist----------
+function requireBotBinaryZipFile($dir,$zipFile)
+{
+	if (file_exists($zipFile)) {
+		return;
+	}
+
+	// Prepare the ZIP File, which may take some time for big bots
+	$tmpfile = tempnam("tmp","botBinaryZipFile_");
+	$zip = new ZipArchivePlus();
+	$zip->open($tmpfile, ZipArchive::CREATE);
+
+	// Stuff with content (all the files from bwapi-data/AI folder, minus bwapi.dll)
+	if ($handle = opendir($dir)) {
+		while (false !== ($fileInFolder = readdir($handle))) {
+			if ('.' === $fileInFolder) continue;
+			if ('..' === $fileInFolder) continue;
+			if ('bwapi.dll' === strtolower($fileInFolder)) continue;
+
+
+			// add the file to the archive
+			if (is_dir($dir.'/'.$fileInFolder)) {
+			    $zip->addDir($dir.'/'.$fileInFolder, $fileInFolder);
+			} else {
+			    $zip->addFile($dir.'/'.$fileInFolder, $fileInFolder);
+			}
+		}
+		closedir($handle);
+	}
+
+	// Close the archive
+	$zip->close();
+
+	// Check whether a different request already finished creating it since we last checked
+	if (file_exists($zipFile)) {
+		if (file_exists($tmpfile)) {
+			unlink($tmpfile);
+		}
+		return;
+	}
+
+	// Move it into the correct directory, which might take some time if it's on a different filesystem
+	if (file_exists($zipFile.'.tmp')) {
+		unlink($zipFile.'.tmp');
+	}
+	rename($tmpfile,$zipFile.'.tmp');
+	chmod_R($zipFile.'.tmp', 0777, 0777);
+
+	// Check whether a different request already finished creating it since we last checked
+	if (!file_exists($zipFile)) {
+		// Rename it to the correct filename
+		rename($zipFile.'.tmp',$zipFile);
+		chmod_R($zipFile, 0777, 0777);
+	} else {
+		if (file_exists($zipFile.'.tmp')) {
+			unlink($zipFile.'.tmp');
+		}
+	}
+}
+
 //----------Function for adding user's profile----------
 function addUser($user,$pass,$name,$race,$student,$school,$description,$botType,$zipBinary,$zipSources,$zipAdditionalFiles,$flags)
 {
@@ -521,16 +603,48 @@ function deleteFolder($path)
 //----------Uploads a new bot binary----------
 function uploadNewBinary($usr,$zipBinary)
 {
-
 		// try extracting the zip files
 		$id = $usr['id'];
 		$dest = $GLOBALS['BOTS_FOLDER_WITHOUT_SLASH'].'/'.$id;
+		deleteFolder($dest.'/AI-temp');
 		if (!extractZip($zipBinary,$dest.'/AI-temp')) {
+			deleteFolder($dest.'/AI-temp');
 			return 3;
 		}
-		chmod_R( $dest.'/AI-temp', 0777, 0777);
-		deleteFolder($dest.'/AI');
+		chmod_R($dest.'/AI-temp', 0777, 0777);
+
+		// prepare to recreate the AI dir
+		deleteFolder($dest.'/AI-old');
+		if (file_exists($dest.'/AI.tempUpload.zip')) {
+			unlink($dest.'/AI.tempUpload.zip');
+		}
+
+		// create the bot binary ZIP file if it doesn't exist
+		requireBotBinaryZipFile($dest.'/AI-temp',$dest.'/AI.tempUpload.zip');
+		chmod_R($dest.'/AI.tempUpload.zip', 0777, 0777);
+
+		// prepare to move the new AI dir and bot binary ZIP file
+		deleteFolder($dest.'/AI-old');
+		if (file_exists($dest.'/AI.old.zip')) {
+			unlink($dest.'/AI.old.zip');
+		}
+
+		// quickly move the new AI dir and bot binary ZIP file to the correct paths
+		// (try to minimize the time that the paths don't exist, because people might be trying to download them)
+		rename($dest.'/AI',$dest.'/AI-old');
 		rename($dest.'/AI-temp',$dest.'/AI');
+		if (file_exists($dest.'/AI.zip')) {
+			rename($dest.'/AI.zip',$dest.'/AI.old.zip');
+		}
+		rename($dest.'/AI.tempUpload.zip',$dest.'/AI.zip');
+		chmod_R($dest.'/AI.zip', 0777, 0777);
+		chmod_R($dest.'/AI', 0777, 0777);
+
+		// clean up
+		if (file_exists($dest.'/AI.old.zip')) {
+			unlink($dest.'/AI.old.zip');
+		}
+		deleteFolder($dest.'/AI-old');
 
 		// get the filename of bot binary, check for BWAPI.dll and put it to DB
 		if ($usr['bot_type'] == 'JAVA_JNI' || $usr['bot_type'] == 'JAVA_MIRROR') {
