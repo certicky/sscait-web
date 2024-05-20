@@ -4,8 +4,8 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\OAuth;
 use League\OAuth2\Client\Provider\Google;
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/vendor/autoload.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
+require_once $GLOBALS['PROJECT_FOLDER_WITHOUT_SLASH'].'/vendor/autoload.php';
 
 function sendMailFromGmail($recipient,$subj,$mess,$title) {
 	if (substr($subj,0,8) != "[SSCAIT]") $subj = "[SSCAIT] ".trim($subj);
