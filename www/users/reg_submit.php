@@ -127,7 +127,7 @@ include('lib/functions/functions.php');
 			}
 
 			// add user
-			$res = addUser($_POST['username'],$_POST['password'],$_POST['name'],$_POST['race'],$_POST['student'],$_POST['school'],$_POST['description'],$_POST['bot_type'],$zipBinary,$zipSources,$zipAdditionalFiles,$_POST['flags']);
+			$res = addUser($_POST['username'],$_POST['password'],$_POST['name'],$_POST['race'],$_POST['student'],$_POST['school'],$_POST['description'],$_POST['bot_type'],$zipBinary,$zipSources,$zipAdditionalFiles,(isset($_POST['flags']) ? $_POST['flags'] : ''));
 				if ($res == 1){
 					die(msg(0,"Failed to send activation email. Please Try registering again or contact the admin."));
 				}
