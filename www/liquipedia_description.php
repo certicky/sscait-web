@@ -79,7 +79,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
 
         $contentsStr = $cache->get($key, 60*60*24*7 * $cacheAgeWeeks);
         $lastRequestTime = (file_exists($liquipedia_last_request_time_file) ? intval(trim(file_get_contents($liquipedia_last_request_time_file))) : 0);
-        $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only one request every few minutes to avoid being blocked by Liquipedia
+        $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only one or two requests every few minutes to avoid being blocked by Liquipedia
         if ($contentsStr != null) {
             $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following content from Liquipedia is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old.</div>'.$contentsStr;
             break;
