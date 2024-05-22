@@ -71,7 +71,24 @@ function getBotAlias($botName) {
         "Lukas Moravec" => "Jonathan",
         "krasi0P" => "Krasi0bot",
         "Infested Artosis" => "Infested_Artosis",
-	"Boris" => "User:%27Airstrike%27_Ivanov/Boris"
+        "Crona" => "BananaBrain",
+        "Terminus" => "BananaBrain",
+        "Brainiac" => "BananaBrain",
+        "adias" => "SAIDA",
+        "Sparks" => "McRave",
+        "Randomhammer" => "Steamhammer",
+        "MegaBot2017" => "MegaBot",
+        "NUS Bot" => "NUS-Bot",
+        "Oyvind Johannessen" => "MadMix",
+        "WOPR Z" => "W.O.P.R.",
+        "ZZZBot" => "ZZZKBot",
+        "CherryPi 2018 AIIDE MOD" => "CherryPi",
+        "LetaBot SSCAI 2015 Final" => "LetaBot",
+        "LetaBot CIG 2016" => "LetaBot",
+        "LetaBot AIIDE 2016" => "LetaBot",
+        "LetaBot AIIDE 2017" => "LetaBot",
+        "LetaBot CIG 2017" => "LetaBot",
+        "CherryPiSSCAIT2017 dupl" => "CherryPi"
     );
 
     if (isset($botAliases[$botName])) $botName = $botAliases[$botName];
