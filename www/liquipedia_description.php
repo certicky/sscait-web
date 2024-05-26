@@ -39,6 +39,9 @@ function getLiquipediaUrl($botName) {
     if ( stripos( implode($headers), '200 OK') !== False ) return array("status"=>"ok","result"=>$directUrl);
     if ( stripos( implode($headers), '429 Too Many Requests') !== False ) return array("status"=>"inaccessible","result"=>null);
 
+    // Liquipedia says to "Rate limit your requests to no more than 1 request per 2 seconds."
+    sleep(2);
+
     // then, browse the Bots category
     $html = file_get_html('https://liquipedia.net/starcraft/Category:Bots');
     if ($html == null) return array("status"=>"inaccessible","result"=>null);
@@ -79,9 +82,9 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
 
         $contentsStr = $cache->get($key, 60*60*24*7 * $cacheAgeWeeks);
         $lastRequestTime = (file_exists($liquipedia_last_request_time_file) ? intval(trim(file_get_contents($liquipedia_last_request_time_file))) : 0);
-        $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only one or two requests every few minutes to avoid being blocked by Liquipedia
+        $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only up to three requests every few minutes to avoid being blocked by Liquipedia
         if ($contentsStr != null) {
-            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following content from Liquipedia is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old.</div>'.$contentsStr;
+            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following content from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old.</div>'.$contentsStr;
             break;
         }
 
@@ -92,6 +95,8 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
             $urlRes = getLiquipediaUrl($botName);
             $liqUrl = $urlRes["result"];
             if ($liqUrl !== null) {
+                // Liquipedia says to "Rate limit your requests to no more than 1 request per 2 seconds."
+                sleep(2);
 
                 // bot IS on Liquipedia
                 $html = file_get_html($liqUrl);
