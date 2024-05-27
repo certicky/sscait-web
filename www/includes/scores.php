@@ -72,10 +72,14 @@ function aasort(array &$bots, string $key) {
     ?>
     <div style="margin-top: 15px; font-size: 80%">
         <table>
-        	<tr>
-        		<td>To change the match schedule:</td>
-        		<td><a class="button_link" href="index.php?action=voteForPlayers">Vote for Players</a></td>
-        	</tr>
+            <?php
+            if ($GLOBALS['votingForPlayersEnabled'] == true) {
+                echo '<tr>';
+                echo '<td>To change the match schedule:</td>';
+                echo '<td><a class="button_link" href="index.php?action=voteForPlayers">Vote for Players</a></td>';
+                echo '</tr>';
+            }
+            ?>
         	<tr>
         		<td>To see bot's ELO in more detail:</td>
         		<td><a class="button_link" href="index.php?action=eloChartBig">Show Big ELO Chart</a></td>
