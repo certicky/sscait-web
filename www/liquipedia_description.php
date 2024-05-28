@@ -152,7 +152,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
                 foreach ($contents as $c) $filteredContents[] = $c;
                 foreach ($filteredContents as $i => $c) {
                     // skip headers if there is no non-header content after it
-                    if ( ( ($i+1) <= sizeof($filteredContents)) && ($filteredContents[$i]['tag'] == 'h4') && ($filteredContents[$i+1]['tag'] == 'h4') ) continue;
+                    if ( ( ($i+1) <= (sizeof($filteredContents)-1)) && ($filteredContents[$i]['tag'] == 'h4') && ($filteredContents[$i+1]['tag'] == 'h4') ) continue;
                     $finalContents[] = $c;
                 }
 
