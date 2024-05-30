@@ -168,7 +168,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
             } else {
 
                 // bot IS NOT on Liquipedia
-                $contentsStr = '<div style="color: rgb(40,40,40);">This bot doesn\'t have a page in the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots section of Liquipedia</a> yet. You could help out by <a href="https://liquipedia.net/starcraft/Help:Create_an_Article" target="_blank">creating</a> it. Feel free to use the <a href="https://liquipedia.net/starcraft/Template:Infobox_bot" target="_blank">Infobox_bot template</a>.</div>';
+                $contentsStr = '<div style="color: rgb(40,40,40);">This bot doesn\'t have a page in the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots section of Liquipedia</a> yet. You could help out by <a href="https://liquipedia.net/starcraft/Help:Create_an_Article" target="_blank">creating</a> it. Please use the <a href="https://liquipedia.net/starcraft/Template:Infobox_bot" target="_blank">Infobox_bot template</a> (see the <a href="./index.php?action=rules" target="_blank">Rules</a> page for further instructions).</div>';
 
                 // cache the negative result as well
                 if ($urlRes["status"] != "inaccessible") $cache->set($key, $contentsStr);
@@ -177,7 +177,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
 
         } else {
             // we've made a liquipedia request recently - tell user that we can't make another one at the moment
-            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">Our request frequency policy prevents us from downloading the info from Liquipedia now. Please try again in a few minutes.</div>';
+            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">Our request frequency policy prevents us from downloading the info from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> now. Please try again in a few minutes.</div>';
         }
 
     }

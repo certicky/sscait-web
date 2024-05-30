@@ -6,14 +6,14 @@ any more (even though individual students usually have their own, easier categor
 the annual tournaments).
 
 <h4>Ladder:</h4>
-There are no special requirements for participating in the ladder at the moment. However, in order to help the growing StarCraft AI ecosystem, authors are encouraged to create a page about their bot in the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots section on Liquipedia</a>. It will also be added to their bot's SSCAIT profile page (<a href="https://sscaitournament.com/index.php?action=botDetails&bot=PurpleWave" target="_blank">example</a>).
+There are no special requirements for participating in the ladder at the moment. However, in order to help the growing StarCraft AI ecosystem, authors are encouraged to create a page about their bot in the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots section on Liquipedia</a> (see instructions below). It will also be added to their bot's SSCAIT profile page (<a href="https://sscaitournament.com/index.php?action=botDetails&bot=PurpleWave" target="_blank">example</a>).
 
 <h4>Tournaments:</h4>
 
     <ul>
         <li>
             During (yearly) tournaments, only one submission per author is allowed due to the possibility of collusion and other shenanigans. 
-            In order to participate in the yearly tournament, every bot <b>must have its own page</b> on Liquipedia. The Liquipedia page should have the 'Bots' category ('[[Category:Bots]]') so that it is linked from the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots category</a> list. The page must contain the <b>names of all the programmers</b> who made the bot. If the bot is <b>based on some other bot</b>, this also needs to be disclosed on the page. Please use the <a href="https://liquipedia.net/starcraft/Template:Infobox_bot" target="_blank">Infobox_bot template</a> when creating that page.
+            In order to participate in the yearly tournament, every bot <b>must have its own page</b> on Liquipedia. The Liquipedia page should have the 'Bots' category (e.g. a line '[[Category:Bots]]' near the end of the page while editing the page) so that it is linked from the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots category</a> list. The page must contain the <b>names of all the programmers</b> who made the bot, in the 'programmers' variable. If the bot is <b>based on some other bot</b>, or is based on or uses <b>other bot-related projects/libraries</b> apart from BWAPI, this also needs to be disclosed on the page (in the 'framework' variable, or the 'wrapper'/'terrain_analysis' variable(s) respectively). You should use the <a href="https://liquipedia.net/starcraft/Template:Infobox_bot" target="_blank">Infobox_bot template</a> when creating that page.
         </li>
         <li>
             If you have worked on more than one bot that's active in SSCAIT, please make sure to inform the SSCAIT admins by email (sscait@gmail.com) or directly at least one week before the tournament starts, so we know which bot to keep enabled. Another option is to just submit an empty ZIP file which would disable a given entry automatically. If it gets discovered that multiple bots written by the same author end up participating in the tournament, they might all get disqualified!
