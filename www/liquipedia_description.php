@@ -84,7 +84,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
         $lastRequestTime = (file_exists($liquipedia_last_request_time_file) ? intval(trim(file_get_contents($liquipedia_last_request_time_file))) : 0);
         $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only up to three requests every few minutes to avoid being blocked by Liquipedia
         if ($contentsStr != null) {
-            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following content from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old.</div>'.$contentsStr;
+            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following section of content from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old, and is licensed using the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" target="_blank">CC-BY-SA 3.0 license</a>.</div>'.$contentsStr;
             break;
         }
 
@@ -145,7 +145,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
                 ksort($contents);
 
                 // print it out
-                echo "<div style=\"padding-bottom: 20px; color: rgb(40,40,40);\">Information from <a target=\"_blank\" href=\"".$liqUrl."\">Liquipedia</a>:</div>";
+                echo "<div style=\"padding-bottom: 20px; color: rgb(40,40,40);\">The following section of content from <a target=\"_blank\" href=\"".$liqUrl."\">Liquipedia</a> is licensed using the <a href=\"https://creativecommons.org/licenses/by-sa/3.0/us/\" target=\"_blank\">CC-BY-SA 3.0 license</a>.</div>";
 
                 $filteredContents = array();
                 $finalContents = array();
