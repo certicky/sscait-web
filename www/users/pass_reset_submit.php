@@ -7,7 +7,7 @@ include('lib/functions/functions.php');
 
 	// we check if everything is filled in and perform checks
 
-	if(!$_POST['email'])
+	if(empty($_POST['email']))
 		{
 			die(msg(0,"Please enter your email address."));
 		}

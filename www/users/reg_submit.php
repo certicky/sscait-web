@@ -5,7 +5,7 @@ include('lib/functions/functions.php');
 
 	//For registration
 	// we check if everything is filled in and perform checks
-	if(empty($GLOBALS['loggingInEnabled']) || !$_POST['username'])
+	if(empty($GLOBALS['loggingInEnabled']) || empty($_POST['username']))
 	{
 		die(msg(0,"<p>Please enter your email.</p>"));
 	}

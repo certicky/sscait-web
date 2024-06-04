@@ -8,7 +8,7 @@ $returnURL = "users/index.php";
 
 	// we check if everything is filled in and perform checks
 
-	if(empty($GLOBALS['loggingInEnabled']) || !$_POST['username'] || !$_POST['password'])
+	if(empty($GLOBALS['loggingInEnabled']) || empty($_POST['username']) || empty($_POST['password']))
 	{
 		die(msg(0,"Username and / or password fields empty!"));
 	}
