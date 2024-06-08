@@ -5,6 +5,10 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/users/lib/functions/functions.php';
 
+if (!isset($_GET['bot'])) {
+	exit;
+}
+
 // escape bot name parameter
 $botName = mysql_real_escape_string(urldecode($_GET['bot']),$GLOBALS['mysqlConnection']);
 
