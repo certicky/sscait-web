@@ -304,8 +304,8 @@ div {
 		width: 0 !important;
 	}
 
-	#bot_list .td_division,  #bot_list .td_description,  #bot_list .td_updated,
-	#bot_list .bot_division, #bot_list .bot_description, #bot_list .bot_updated
+	#bot_list .td_division,  #bot_list .td_description,
+	#bot_list .bot_division, #bot_list .bot_description
 	{
 		visibility: hidden !important;
 		position: absolute !important;
