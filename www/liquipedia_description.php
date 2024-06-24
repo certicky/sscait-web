@@ -28,35 +28,46 @@ function fixRelativeLinks($string) {
     return $string;
 }
 
-function getLiquipediaUrl($botName) {
+function getLiquipediaPage($botName, $context) {
 
     $botName = getBotAlias($botName);
     if (!isLiquipediaPageNameAllowed($botName)) return array("status"=>"not_found","result"=>null);
 
-    // first, try the direct link
-    $directUrl = 'https://liquipedia.net/starcraft/'.str_replace(' ','_',$botName);
-    $headers = get_headers($directUrl);
-    if ( stripos( implode($headers), '200 OK') !== False ) return array("status"=>"ok","result"=>$directUrl);
-    if ( stripos( implode($headers), '429 Too Many Requests') !== False ) return array("status"=>"inaccessible","result"=>null);
-
-    // Liquipedia says to "Rate limit your requests to no more than 1 request per 2 seconds."
-    sleep(2);
-
-    // then, browse the Bots category
-    $html = file_get_html('https://liquipedia.net/starcraft/Category:Bots');
-    if ($html == null) return array("status"=>"inaccessible","result"=>null);
     $bestMatch = null;
     $bestMatchScore = 9999;
-    foreach($html->find('.mw-content-ltr a') as $e) {
-        $n = strtolower(trim($e->plaintext));
-        $mismatchedChars = min( levenshtein(strtolower(trim($botName)),$n) , levenshtein($n,strtolower(trim($botName))) );
+    $optionalCmcontinueParam = "";
+    // note: the maximum cmlimit is 500
+    $cmlimit = 500;
+    do {
+        $compressedData = file_get_contents("https://liquipedia.net/starcraft/api.php?action=query&list=categorymembers&cmtitle=Category:Bots&cmprop=title&cmlimit=$cmlimit$optionalCmcontinueParam&format=json", false, $context);
+        if (stripos(implode($http_response_header), '200 OK') === False) return array("status"=>"inaccessible","result"=>null);
+        if ($compressedData == null) return array("status"=>"inaccessible","result"=>null);
+        $data = gzdecode($compressedData);
+        if ($data == null) return array("status"=>"inaccessible","result"=>null);
+        $json = json_decode($data, true);
+        if ($json == null) return array("status"=>"inaccessible","result"=>null);
+        if (!array_key_exists("query", $json)) return array("status"=>"inaccessible","result"=>null);
+        if (!isset($json["query"]["categorymembers"])) return array("status"=>"inaccessible","result"=>null);
 
-        if ($mismatchedChars < $bestMatchScore) {
-            $bestMatchScore = $mismatchedChars;
-            $bestMatch = 'https://liquipedia.net'.$e->href;
-            if ($mismatchedChars == 0) break;
+        foreach($json["query"]["categorymembers"] as $vals) {
+            $title = strtolower(trim($vals["title"]));
+            $mismatchedChars = min(levenshtein(strtolower(trim($botName)),$title), levenshtein($title,strtolower(trim($botName))));
+
+            if ($mismatchedChars < $bestMatchScore) {
+                $bestMatchScore = $mismatchedChars;
+                $bestMatch = $vals["title"];
+                if ($mismatchedChars == 0) break;
+            }
         }
-    }
+
+        if (!array_key_exists("continue", $json) || !isset($json["continue"]["cmcontinue"])) {
+            break;
+        }
+
+        $optionalCmcontinueParam = "&cmcontinue=".$json["continue"]["cmcontinue"];
+        // https://liquipedia.net/api-terms-of-use says to "Rate limit your requests to no more than 1 request per 2 seconds."
+        sleep(2);
+    } while ($optionalCmcontinueParam != "");
 
     // allow small text mismatch
     if ($bestMatchScore <= 2) {
@@ -82,7 +93,9 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
 
         $contentsStr = $cache->get($key, 60*60*24*7 * $cacheAgeWeeks);
         $lastRequestTime = (file_exists($liquipedia_last_request_time_file) ? intval(trim(file_get_contents($liquipedia_last_request_time_file))) : 0);
-        $nextRequestAllowed = (time() - $lastRequestTime > 60 * 20); // allow only up to three requests every few minutes to avoid being blocked by Liquipedia
+        // Throttle Liquipedia requests to avoid being blocked by Liquipedia. Note: a query request is allowed every 2 seconds,
+        // and a parse request is allowed every 30 seconds, as per https://liquipedia.net/api-terms-of-use, but we don't need to use it that often.
+        $nextRequestAllowed = (time() - $lastRequestTime > 60 * 10);
         if ($contentsStr != null) {
             $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">The following section of content from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> is displayed from cache, which might be up to '.$cacheAgeWeeks.' week'.(($cacheAgeWeeks > 1) ? 's' : '' ).' old, and is licensed using the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" target="_blank">CC-BY-SA 3.0 license</a>.</div>'.$contentsStr;
             break;
@@ -92,14 +105,38 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
         if ($contentsStr == null && $nextRequestAllowed) {
 
             file_put_contents($liquipedia_last_request_time_file, time());
-            $urlRes = getLiquipediaUrl($botName);
-            $liqUrl = $urlRes["result"];
-            if ($liqUrl !== null) {
-                // Liquipedia says to "Rate limit your requests to no more than 1 request per 2 seconds."
+
+            $opts = [
+                "http" => [
+                    // Some requirements by Liquipedia as per https://liquipedia.net/api-terms-of-use
+                    "user_agent" => 'sscait-web/1.0 (https://sscaitournament.com/; ' . $GLOBALS['ADMIN_EMAIL'] . ')',
+                    "header" => "Accept-Encoding: gzip\r\n"
+                ]
+            ];
+            $context = stream_context_create($opts);
+
+            $pageRes = getLiquipediaPage($botName, $context);
+            $liqPage = $pageRes["result"];
+            if ($liqPage !== null) {
+                // bot IS on Liquipedia
+
+                // https://liquipedia.net/api-terms-of-use says to "Rate limit your requests to no more than 1 request per 2 seconds."
                 sleep(2);
 
-                // bot IS on Liquipedia
-                $html = file_get_html($liqUrl);
+                $liqUrl = "https://liquipedia.net/starcraft/$liqPage";
+                $compressedData = file_get_contents("https://liquipedia.net/starcraft/api.php?action=parse&page=$liqPage&format=json", false, $context);
+                if (stripos(implode($http_response_header), '200 OK') === False) continue;
+                if ($compressedData == null) continue;
+                $data = gzdecode($compressedData);
+                if ($data == null) continue;
+                $json = json_decode($data, true);
+                if ($json == null) continue;
+                if (!array_key_exists("parse", $json)) continue;
+                if (!array_key_exists("text", $json["parse"])) continue;
+                if (!array_key_exists("*", $json["parse"]["text"])) continue;
+                if (!isset($json["parse"]["text"]["*"])) continue;
+
+                $html = str_get_html($json["parse"]["text"]["*"]);
 
                 // extract everything of interest
                 $interestingContent = array(
@@ -162,8 +199,8 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
                 }
 
                 // cache the result
-                if ($urlRes["status"] != "inaccessible") $cache->set($key, $contentsStr);
-
+                if ($pageRes["status"] != "inaccessible") $cache->set($key, $contentsStr);
+                break;
 
             } else {
 
@@ -171,7 +208,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
                 $contentsStr = '<div style="color: rgb(40,40,40);">This bot doesn\'t have a page in the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots section of Liquipedia</a> yet. You could help out by <a href="https://liquipedia.net/starcraft/Help:Create_an_Article" target="_blank">creating</a> it. Please use the <a href="https://liquipedia.net/starcraft/Template:Infobox_bot" target="_blank">Infobox_bot template</a> (see the <a href="./index.php?action=rules" target="_blank">Rules</a> page for further instructions).</div>';
 
                 // cache the negative result as well
-                if ($urlRes["status"] != "inaccessible") $cache->set($key, $contentsStr);
+                if ($pageRes["status"] != "inaccessible") $cache->set($key, $contentsStr);
 
             }
 
