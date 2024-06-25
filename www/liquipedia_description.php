@@ -123,6 +123,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
                 // https://liquipedia.net/api-terms-of-use says to "Rate limit your requests to no more than 1 request per 2 seconds."
                 sleep(2);
 
+                $liqPage = str_replace(' ','_',$liqPage);
                 $liqUrl = "https://liquipedia.net/starcraft/$liqPage";
                 $compressedData = file_get_contents("https://liquipedia.net/starcraft/api.php?action=parse&page=$liqPage&format=json", false, $context);
                 if (stripos(implode($http_response_header), '200 OK') === False) continue;
