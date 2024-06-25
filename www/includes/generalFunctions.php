@@ -88,7 +88,8 @@ function getBotAlias($botName) {
         "LetaBot AIIDE 2016" => "LetaBot",
         "LetaBot AIIDE 2017" => "LetaBot",
         "LetaBot CIG 2017" => "LetaBot",
-        "CherryPiSSCAIT2017 dupl" => "CherryPi"
+        "CherryPiSSCAIT2017 dupl" => "CherryPi",
+        "krasi0" => "Krasi0bot"
     );
 
     if (isset($botAliases[$botName])) $botName = $botAliases[$botName];
