@@ -215,7 +215,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
 
         } else {
             // we've made a liquipedia request recently - tell user that we can't make another one at the moment
-            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">Our request frequency policy prevents us from downloading the info from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> now. Please try again in a few minutes.</div>';
+            $contentsStr = '<div style="color: rgb(40,40,40); font-size: 80%; padding-bottom: 5px;">Liquipedia\'s request frequency policy prevents us from downloading the info from <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Liquipedia</a> now. Please try again in a few minutes.</div>';
         }
 
     }
