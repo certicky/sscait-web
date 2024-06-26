@@ -211,6 +211,7 @@ if (isset($_GET["bot_name"]) && (trim($_GET["bot_name"]) != '')) {
                 // cache the negative result as well
                 if ($pageRes["status"] != "inaccessible") $cache->set($key, $contentsStr);
 
+                break;
             }
 
         } else {
