@@ -1,3 +1,7 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
+?>
+
 <h2>Rules</h2>
 <h3>Participants</h3>
 <div>
@@ -16,7 +20,7 @@ There are no special requirements for participating in the ladder at the moment.
             In order to participate in the yearly tournament, every bot <b>must have its own page</b> on Liquipedia. The Liquipedia page should have the 'Bots' category (e.g. a line '[[Category:Bots]]' near the end of the page while editing the page) so that it is linked from the <a href="https://liquipedia.net/starcraft/Category:Bots" target="_blank">Bots category</a> list. The page must contain the <b>names of all the programmers</b> who made the bot, in the 'programmers' variable. If the bot is <b>based on some other bot</b>, or is based on or uses <b>other bot-related projects/libraries</b> apart from BWAPI, this also needs to be disclosed on the page (in the 'framework' variable, or the 'wrapper'/'terrain_analysis' variable(s) respectively). You should use the <a href="https://liquipedia.net/starcraft/Template:Infobox_bot" target="_blank">Infobox_bot template</a> when creating that page.
         </li>
         <li>
-            If you have worked on more than one bot that's active in SSCAIT, please make sure to inform the SSCAIT admins by email (sscait@gmail.com) or directly at least one week before the tournament starts, so we know which bot to keep enabled. Another option is to just submit an empty ZIP file which would disable a given entry automatically. If it gets discovered that multiple bots written by the same author end up participating in the tournament, they might all get disqualified!
+            If you have worked on more than one bot that's active in SSCAIT, please make sure to inform the SSCAIT admins by email (<a href="mailto:<?php echo $GLOBALS["ADMIN_EMAIL"]; ?>"><?php echo $GLOBALS["ADMIN_EMAIL"]; ?></a>) or directly at least one week before the tournament starts, so we know which bot to keep enabled. Another option is to just submit an empty ZIP file which would disable a given entry automatically. If it gets discovered that multiple bots written by the same author end up participating in the tournament, they might all get disqualified!
         </li>
         <li>
             Also please note the new rule about <b>submitting clones of existing bots</b> below.
