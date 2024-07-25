@@ -63,16 +63,17 @@ There are no special requirements for participating in the ladder at the moment.
 	We accept bots coded either as standard C++ BWAPI AI Modules or Proxy Bots or in JAVA (using <a href="http://sscaitournament.com/index.php?action=tutorial">BWMirror</a>
 	or <a href="http://code.google.com/p/jnibwapi/">JNIBWAPI</a>). C++ bots need to be compiled as <b>DLL</b> or <b>EXE</b> files, Java bots as <b>runnable JAR</b>.</li>
 	<li>Each bot needs to be submitted with a compatible BWAPI.dll file (follow the on-screen instructions while submitting the bot).</li>
-	<li>The BWAPI.dll must be one of the versions supported by the tournament. The list of supported BWAPI versions expands over time and includes for example 3.7.4, 3.7.5, 4.1.0-beta, 4.1.1, 4.1.2 4.2.0 and 4.4.0.</li>
+	<li>The BWAPI.dll must be one of the versions supported by the tournament. The list of supported BWAPI versions expands over time and is currently just the Release mode BWAPI.dll file for versions: 3.7.4, 3.7.5, 4.1.0-beta, 4.1.1-beta, 4.1.2, 4.2.0, 4.4.0.</li>
 	<li>The BWAPI.dll that you submit, must match one of the following MD5 hashes:
         <ul>
-            <li>1364390d0aa085fba6ac11b7177797b0</li>
-            <li>2f6fb401c0dcf65925ee7ad34dc6414a</li>
-            <li>4814396fba36916fdb7cf3803b39ab51</li>
-            <li>5d5128709ba714aa9c6095598bcf4624</li>
-            <li>5e590ea55c2d3c66a36bf75537f8655a</li>
-            <li>6e940dc6acc76b6e459b39a9cdd466ae</li>
-            <li>cf7a19fe79fad87f88177c6e327eaedc</li>
+            <li>0267cb991e6bc5abc12d59eac14cb318 (i.e. re-release of 4.2.0)</li>
+            <li>1364390d0aa085fba6ac11b7177797b0 (i.e. 4.1.2)</li>
+            <li>2f6fb401c0dcf65925ee7ad34dc6414a (i.e. original release of 4.2.0)</li>
+            <li>4814396fba36916fdb7cf3803b39ab51 (i.e. 4.1.0-beta)</li>
+            <li>5d5128709ba714aa9c6095598bcf4624 (i.e. 4.1.1-beta)</li>
+            <li>5e590ea55c2d3c66a36bf75537f8655a (i.e. 3.7.5)</li>
+            <li>6e940dc6acc76b6e459b39a9cdd466ae (i.e. 3.7.4)</li>
+            <li>cf7a19fe79fad87f88177c6e327eaedc (i.e. 4.4.0)</li>
         </ul>
     </li>
     <li>Using BWTA or similar libraries is allowed and encouraged. If you have some special requirements (external programs, libraries, etc.), <a href="./index.php?action=contact">let us know</a>. </li>
