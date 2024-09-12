@@ -2,16 +2,13 @@
 <div id="home-wrapper">
 	<div id="home-stream-cell">
 
-        <?php
-        /*
-        <!-- Notification -->
         <div style=" margin 2ex 0; padding: 1ex; background: #449D2D; color: white; font-size: 85%; border: solid 1px black; border-radius: 7px;">
-        First round of SSCAIT 2017/18 (round-robin) is over. The results are <a style="color: #fff;" href="./index.php?action=2017">here</a>.<br>
-        2nd round (double elimination bracket) is still in progress. Current state is <a style="color: #fff;" href="http://liquipedia.net/starcraft/SSCAIT2017">here</a>.<br>
-        Bot submissions and match voting is enabled again.
+        Games and tournaments are no longer played and old replays are no longer available, as this website was migrated to a new owner and host lacking sufficient resources to run them.
+        The website still works though, including bot downloads, registration and bot submission.
+        If you add your bot here, it will automatically start playing on <a style="color: #fff;" href="https://www.basil-ladder.net">BASIL</a> within a day or so.
         </div>
-        */
 
+        <?php
         if ($GLOBALS["eliminationBracketPhase"]) {
             ?>
             <div style=" margin 2ex 0; padding: 1ex; background: #449D2D; color: white; font-size: 95%; border: solid 1px black; border-radius: 7px;">
