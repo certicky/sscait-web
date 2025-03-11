@@ -115,7 +115,7 @@ if (isset($_GET['action']) && ($_GET['action'] == 'botDetails') && isset($_GET['
 				</ul>
 
 				<div id="patreon-button">
-    				<a href="https://www.patreon.com/sscait" title="Support SSCAIT on Patreon. Click for more info.">
+    				<a href="https://www.patreon.com/sscaitournament" title="Support SSCAIT on Patreon. Click for more info.">
     					<img src="./images/patreon.png" alt="Support us on Patreon" />
     				</a>
 				</div>

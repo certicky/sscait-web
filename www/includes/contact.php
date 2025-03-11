@@ -34,7 +34,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
 </p>
 
 <p>
-	If you like what we do, you can support us on Patreon: <a target="_blank" href="http://patreon.com/sscait">SSCAIT Patreon</a>
+	If you like what we do, you can support us on Patreon: <a target="_blank" href="http://patreon.com/sscaitournament">SSCAIT Patreon</a>
 </p>
 
 <!--

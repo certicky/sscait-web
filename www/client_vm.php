@@ -157,7 +157,7 @@ if (!$GLOBALS["eliminationBracketPhase"]) {
 ?>
 </table>
 <div id="patrons_list_wrapper" style="border-bottom: solid 1px black;">
-	Like what we're doing? Support us on Patreon: <span style="background-color: none; font-size: 110%; font-weight: bold; font-variant: small-caps;">patreon.com/sscait</span>
+	Like what we're doing? Support us on Patreon: <span style="background-color: none; font-size: 110%; font-weight: bold; font-variant: small-caps;">patreon.com/sscaitournament</span>
 	<img style="float: right; height: 17pt;" src="./images/patreon.png" />
 </div>
 
