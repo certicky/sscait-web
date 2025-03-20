@@ -151,7 +151,7 @@
 
 					SSCAIT is a non-profit project, but we're trying to help out young
 					students interested in Game AI research.
-					By <a href="https://www.patreon.com/sscait">supporting us on Patreon</a>, you're directly sponsoring two things:
+					By <a href="https://www.patreon.com/sscaitournament">supporting us on Patreon</a>, you're directly sponsoring two things:
 
 					<ul style="">
 						<li>The tournament itself (hardware, maintenance, hosting)</li>
