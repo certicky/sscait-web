@@ -175,6 +175,12 @@ clever heuristics and fastest learning capabilities.</p>
       <td>Bug reporting</td>
       <td><a target="_blank" href=""></a></td>
    </tr>
+   <tr>
+      <td>No photo available</td>
+      <td class="name">Chris Coxe</td>
+      <td>Admin, Programming</td>
+      <td><a target="_blank" href="https://github.com/chriscoxe/">homepage</a></td>
+   </tr>
 </table>
 <hr>
 <h4><a name="news">In the news</a></h4>
