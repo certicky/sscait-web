@@ -161,16 +161,14 @@
 					Here's the current list of our official supporters:
 					<div style="font-style: italic; padding-bottom: 5px;">
 					<?php
-					   $res = mysql_query("SELECT * FROM supporters ORDER BY full_name ASC;");
+					   $res = mysql_query("SELECT * FROM supporters ORDER BY amount_monthly_cents DESC, full_name ASC;");
 					   $patrons = array();
 					   while ($r = mysql_fetch_assoc($res)) {
-					       if ($r['amount_monthly_cents'] >= 1000) {
     					       if ($r['link'] == "") {
     					           $patrons[] = $r['full_name'];
     					       } else {
     					           $patrons[] = '<a href="'.$r['link'].'" target="_blank">'.$r['full_name'].'</a>';
     					       }
-					       }
 					   }
 					   echo join(", ",$patrons);
 					?>
