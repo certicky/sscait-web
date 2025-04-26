@@ -280,7 +280,7 @@ function listOneFolder($folderPath,$folderReadableName,$binaryPath="N/A",$elemen
 								<input name="bot_binary" type="file" accept=".zip,.ZIP" value="" />
 								<br/>
 								<input class="pure-button pure-button-primary" style="margin-top: 3px;" type="submit" name="upload-new-binary" value="Upload new Bot Binary (ZIP)" /><img id="loading2" src="../images/loading.gif" alt="uploading.." />
-								<div class="formNote">Note: Uploading new bot version will replace all the contents of Starcraft/bwapi-data/AI/ folder.</div>
+								<div class="formNote">Note: Uploading new bot version will replace all the contents of Starcraft/bwapi-data/AI/ folder. The file to be uploaded must be less than 100 MB.</div>
 							</form>
 							<div id="error2">&nbsp;</div>
 							<div class="done" id="binaryUploadSuccessfull">New bot version uploaded! [ <a href="./index.php">refresh</a> ]</div>
