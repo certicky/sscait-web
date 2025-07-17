@@ -30,8 +30,8 @@ include('lib/functions/functions.php');
 		die(msg(0,"<p>Forbidden characters in full name. Please use only alphanumeric characters and spaces.</p>"));
 	}
 
-	elseif(strlen($_POST['name'])<5) {
-		die(msg(0,"<p>Full name must be at least 5 characters long.</p>"));
+	elseif(strlen($_POST['name'])<4) {
+		die(msg(0,"<p>Full name must be at least 4 characters long.</p>"));
 	}
 
 	elseif(uniqueName($_POST['name']))
