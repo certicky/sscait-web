@@ -366,7 +366,7 @@ foreach ($bots as $bot) {
          //. urlencode($bot['name'])
          //. "\">binary</a> ]<br/>[ <a target=\"_blank\" href=\"./bot_binary.php?bot="
          //. urlencode($bot['name'])
-         //. "&amp;bwapi_dll=true\">bwapi.dll</a> ]"
+         //. "&amp;bwapi_dll=true\">BWAPI.dll</a> ]"
 		 ."</div></td></tr>\n";
 }
 

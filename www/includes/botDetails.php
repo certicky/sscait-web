@@ -358,7 +358,7 @@ if ($botId == null) {
 		<table style="margin-bottom: 20px;">
 			<tr><td>Last updated:</td><td><?php echo $botLastUpdate; ?></td></tr>
 			<tr><td>Download bot binary:</td><td><?php echo "<a target=\"_blank\" href=\"./bot_binary.php?bot=".urlencode($botName)."\">binary</a>"; ?></td></tr>
-			<tr><td>Download bwapi.dll:</td><td><?php echo "<a target=\"_blank\" href=\"./bot_binary.php?bot=".urlencode($botName)."&amp;bwapi_dll=true\">bwapi.dll</a>"; ?></td></tr>
+			<tr><td>Download BWAPI.dll:</td><td><?php echo "<a target=\"_blank\" href=\"./bot_binary.php?bot=".urlencode($botName)."&amp;bwapi_dll=true\">BWAPI.dll</a>"; ?></td></tr>
 		</table>
 		
 		<?php 

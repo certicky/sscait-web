@@ -340,7 +340,7 @@ function getFileByExtension($folder,$extension) {
 		while (false !== ($entry = readdir($handle))) {
 			$strings = explode('.', $entry);
 			$ext = strtolower(end($strings));
-			if ($ext==strtolower($extension) && ($entry != "BWAPI.dll")) {
+			if ($ext==strtolower($extension) && (strtolower($entry) != 'bwapi.dll')) {
 				return $entry;
 				break;
 			}
@@ -350,11 +350,14 @@ function getFileByExtension($folder,$extension) {
 	return FALSE;
 }
 
-//----------Function that checks if BWAPI.dll is in the folder----------
-function isBWAPIdllInFolder($folder) {
+//----------Function that checks if BWAPI.dll is in the folder (case-insensitive) and may rename to correct case-sensitivity (BWAPI.dll)----------
+function requireBWAPIdllInFolder($folder) {
 	if ($handle = opendir($folder)) {
 		while (false !== ($entry = readdir($handle))) {
-			if ($entry == "BWAPI.dll") {
+			if (strtolower($entry) == 'bwapi.dll') {
+				if ($entry != 'BWAPI.dll') {
+					rename($folder.'/'.$entry,$folder.'/BWAPI.dll');
+				}
 				return TRUE;
 			}
 		}
@@ -427,7 +430,7 @@ function requireBotBinaryZipFile($dir,$zipFile)
 	$zip = new ZipArchivePlus();
 	$zip->open($tmpfile, ZipArchive::CREATE);
 
-	// Stuff with content (all the files from bwapi-data/AI folder, minus bwapi.dll)
+	// Stuff with content (all the files from bwapi-data/AI folder, minus BWAPI.dll)
 	if ($handle = opendir($dir)) {
 		while (false !== ($fileInFolder = readdir($handle))) {
 			if ('.' === $fileInFolder) continue;
@@ -539,7 +542,7 @@ function addUser($user,$pass,$name,$race,$student,$school,$description,$botType,
 			$sql = "DELETE FROM fos_user WHERE email='".$user."'";
 			$res = mysql_query($sql) or die(mysql_error());
 			return 4;
-		} else if (!isBWAPIdllInFolder($dest.'/AI')) {
+		} else if (!requireBWAPIdllInFolder($dest.'/AI')) {
 			$sql = "DELETE FROM fos_user WHERE email='".$user."'";
 			$res = mysql_query($sql) or die(mysql_error());
 			return 5;
@@ -659,7 +662,7 @@ function uploadNewBinary($usr,$zipBinary)
 			$sql = "UPDATE fos_user SET bot_enabled='0',bot_path='',last_update_time=NOW()  WHERE id='".$id."';";
 			$res = mysql_query($sql) or die(mysql_error());
 			return 4;
-		} else if (!isBWAPIdllInFolder($dest.'/AI')) {
+		} else if (!requireBWAPIdllInFolder($dest.'/AI')) {
 			$sql = "UPDATE fos_user SET bot_enabled='0',bot_path='',last_update_time=NOW()  WHERE id='".$id."';";
 			$res = mysql_query($sql) or die(mysql_error());
 			return 5;

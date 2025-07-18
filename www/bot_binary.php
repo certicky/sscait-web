@@ -32,7 +32,7 @@ while ($line = mysql_fetch_assoc($res)) {
 	$file = $line['bot_path'];
 	$name = $line['full_name'];
 
-	// serve the bwapi.dll file
+	// serve the BWAPI.dll file
 	if (isset($_GET['bwapi_dll']) && $_GET['bwapi_dll'] == 'true') {
 		if (file_exists(dirname($file).'/BWAPI.dll')) {
 			serveFile(dirname($file).'/BWAPI.dll');
