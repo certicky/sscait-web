@@ -161,7 +161,7 @@
 		  <tr>
 			<td>
 				<label for="bot_binary">Compiled Bot with BWAPI.dll (max size: <?php echo ini_get('upload_max_filesize');?>):<br/>
-				<span>ZIP containing <b>(1)</b> <b>Runnable JAR</b>, <b>EXE</b> or <b>DLL</b> file, <b>(2)</b> the "<b>BWAPI.dll</b>" file from your computer (it's probably in your "Chaoslauncher" folder) and <b>(3)</b> anything else that you need to have in the "Starcraft/bwapi-data/AI" folder (optional). For example, if you're using some custom JNIBWAPI bridge DLL, you should include it here.</span></label>
+				<span>ZIP containing <b>(1)</b> <b>Runnable JAR</b>, <b>EXE</b> or <b>DLL</b> file, <b>(2)</b> the "<b>BWAPI.dll</b>" file from your computer and <b>(3)</b> anything else that you need to have in the "Starcraft/bwapi-data/AI" folder (optional). For example, if you're using some custom JNIBWAPI bridge DLL, you should include it here.</span></label>
 			</td>
 			<td>
 				<input name="bot_binary" type="file" accept=".zip,.ZIP" value="<?php if (isset($_POST['bot_binary'])) echo $_POST['bot_binary']; ?>" />

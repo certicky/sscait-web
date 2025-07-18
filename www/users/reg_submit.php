@@ -147,7 +147,7 @@ include('lib/functions/functions.php');
 					}
 				}
 				if ($res == 5){
-					die(msg(0,"BWAPI.dll was not found in your bot ZIP archive ".$_FILES['bot_binary']['name'].". Please add it - it should be in your 'Chaoslauncher' folder."));
+					die(msg(0,"BWAPI.dll was not found in your bot ZIP archive ".$_FILES['bot_binary']['name'].". Please add it."));
 				}
 				if ($res == 99){
 					die(msg(1,"<p>Registration successful! <a href='login.php'>Click here</a> to login.</p>"));

@@ -40,7 +40,7 @@ include('../lib/functions/functions.php');
 					}
 				}
 				if ($res == 5){
-					die(msg(0,"BWAPI.dll was not found in your bot ZIP archive ".$_FILES['bot_binary']['name']." (it should be in your 'Chaoslauncher' folder). The bot needed to be disabled without it!"));
+					die(msg(0,"BWAPI.dll was not found in your bot ZIP archive ".$_FILES['bot_binary']['name'].". The bot needed to be disabled without it!"));
 				}
 				if ($res == 99){
 					die(msg(1,"<p>New version of the bot successfully uploaded!</p>"));
