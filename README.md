@@ -1,7 +1,7 @@
 ### SSCAIT web
 
 * This is an implementation of the web frontend for **Student StarCraft AI Tournament** (SSCAIT): http://sscaitournament.com/
-* It only makes sense to use this project as an add-on to **SSCAIT Tournament Manager** from this repository: https://github.com/certicky/sscait-tournamentmanager
+* It is normally used in conjunction with **SSCAIT Tournament Manager** from this repository: https://github.com/certicky/sscait-tournamentmanager
 * This web frontend should typically be hosted on the Host machine of SSCAIT Tournament Manager, where its database also runs (see https://github.com/certicky/sscait-tournamentmanager).
 * **Warning:** This implementation is a complete spaghetti code mess. It's a hack on top of a hack and quick patch on top of a quick patch. None of this was designed to be used for more than one semester, yet here we are, 12 years later, still running it. Fun!
 
@@ -12,7 +12,8 @@
 
 #### Installation
 
-* Install web server of your choice and PHP 7 or newer compatible version. PHP 8.2 seems to work. Ensure that php-zip is installed. For MySQL, ensure that php-mysqlnd is installed.
+* Note: to see more detailed instructions based on these instructions that record the necessary/notable installation instructions that I used for a new web server host while I migrated the website from a different hosting company, see [INSTALL.txt](INSTALL.txt).
+* Install web server of your choice (e.g. Apache) and PHP 7 or newer compatible version. PHP 8.3 or 8.2 seem to work. Ensure that php-zip is installed. Ensure that MySQL Server and php-mysql and the mysqlnd PHP extension is installed.
 * Install `composer`. This is used for downloading some dependencies.
 * Make sure you have MySQL server up and running and that it contains the `sc` database and a user with all the required privileges.
   * You should already have the DB set up if you're using this in conjunction with https://github.com/certicky/sscait-tournamentmanager.
@@ -33,9 +34,13 @@
   * `composer require phpmailer/phpmailer`
   * `composer require league/oauth2-google`
   * Note: `get_oauth_token.php` currently uses a hardcoded path to under `/var/www/sscait-web/` - if you are using a different path, edit the path in `get_oauth_token.php`.
+* By default, PHP might not allow large files to be uploaded. You might need to increase the `post_max_size` and `upload_max_filesize` settings in php.ini, e.g. `post_max_size = 101M` and `upload_max_filesize = 100M`, to enable users to upload a bot ZIP file up to 100 MB size.
 * If everything went well, the web should be accessible at a location determined by your web server - usually `http://localhost/` or `http://localhost:8080`.
 * In order to find out what Google Refresh Token to configure in `settings_server.php` in order for the website to be able send emails, the website needs to be reachable at the Redirect URI you've configured in Google Developer Console (e.g. https://sscaitournament.com/get_oauth_token.php). To generate a Google Refresh Token for the first time, or generate another one after the old one has expired or after you've revoked it, open https://sscaitournament.com/get_oauth_token.php in a browser, select "Google" provider, enter the Google Client ID and Google Client Secret, then press the "Continue" button. It should show a sign-in page. Use the page to log in to the account specified by `$GLOBALS['SMTP_USERNAME']`. It should ask for permission to access the account, so grant the permissions. If successful, it should display the Google Refresh Token and associated expiry information. **Warning**: it will only display the Google Refresh Token the first time you do it, so be sure to capture it, otherwise you would need to revoke the Google Refresh Token in Google Developer Console then try again, or wait for it to expire. If it ever expires, you'll need to (manually) use the https://sscaitournament.com/get_oauth_token.php page again to get another one, but the one I got expires in over 50 years. Configure `$GLOBALS['SMTP_GOOGLE_REFRESH_TOKEN']` in `settings_server.php`, and ensure that `$GLOBALS['loggingInEnabled']` is set to `true`. You could try using the website to reset a user's password to test that the website can successfully send emails.
-* Tip: depending on which operating system or webserver or other packages you're using, some relevant log files might be at/under `/var/log/mysqld.log`, `/var/log/php-fpm/`, `/var/log/httpd/` and some commands to filter for potential problems (e.g. failures due to timeout due to the machine being overloaded) might include:
+* Tip: depending on which operating system or webserver or other packages you're using, some relevant log files might be at/under `/var/log/mysql/` or `/var/log/mysqld.log`, `/var/log/apache2/` or `/var/log/httpd/`, and possibly `/var/log/php-fpm/`. Some example commands to filter for potential problems (e.g. failures due to timeout due to the machine being overloaded) might include:
+  * `sudo cat /var/log/mysql/error.log | grep -v " \[Note\] " | less`
+  * `sudo tac /var/log/apache2/error.log | grep -v "[:]\(debug\|notice\|info\)" | grep -v -e " \(AH01797\|AH01630\): client denied by server configuration: " -e " AH10244: invalid URI path " -e " AH01276: Cannot serve directory .*: No matching DirectoryIndex .* found, and server-generated directory index forbidden by Options directive" | less`
+  * `sudo tac /var/log/apache2/access.log | less` to see the details of every request. I also added some extra columns to each `LogFormat` in `/etc/httpd/conf/httpd.conf`, e.g. `%T` (the time taken to serve the request, in seconds) and `port:%p` (the canonical port of the server serving the request, e.g. 80 (the default port number for HTTP) or 443 (the default port number for HTTPS)). If you add the `%T` column, you can use e.g. `grep` or `awk`/`gawk` to filter on requests that have a high time taken to serve the request, and possibly failed due to timeout.
   * `sudo tac /var/log/mysqld.log | grep -v " \[Note\] " | less`
   * `sudo tac /var/log/php-fpm/www-error.log | grep -v " PHP Notice: " | less`
   * `sudo tac /var/log/php-fpm/error.log | grep -v " NOTICE: " | less`

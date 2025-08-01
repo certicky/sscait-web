@@ -1,0 +1,592 @@
+﻿Notes for installing sscait-web and its prerequisites
+-----------------------------------------------------
+
+## This file records the necessary/notable sscait-web installation instructions that I used for a new web server host while I migrated the website from a different hosting company, based on the generic installation instructions at README.md.
+
+## FTR, at the time of writing, these instructions were used on Ubuntu 24.04 and they installed the following package versions:
+## * MySQL Server 8.0 (warning: versions greater than 5.7 are not yet compatible compatible with sscait-tournamentmanager)
+## * PHP 8.3
+## * php-zip 8.3
+## * composer 2.7.1
+## * php-mysql 8.3 (I think this installed the mysqlnd PHP extension, which is also a prerequisite)
+## * Apache 2.4
+## Note: the instructions use git, which I didn't need to install myself, and I use VIM as my editor, which I didn't need to install myself.
+## After it was all set up and working for the production database & files, it comprised 6-7 GB disk space, although sscait-tournamentmanager hasn't beed installed yet.
+
+## Optional: if using vim, I configure vim to help avoid it leaking info about my editing into its temporary files (e.g. pasted passwords, and other info like filenames and other tracking):
+# ls -la ~/.vim/
+## For me, ~/.vim/ didn't already exist.
+# mkdir ~/.vim
+## Create ~/.vim/vimrc file:
+# vim ~/.vim/vimrc
+## Edit it so that it contains the following lines (note: lines starting with '"' are comments):
+" Disable vim from saving tracking info in .viminfo
+set viminfo=
+
+set nobackup
+set noswapfile
+
+" Disable .netrwhist
+let g:netrw_dirhistmax = 0
+
+syntax on
+colorscheme elflord
+
+## ... then delete some files (probably only some of them might exist, if any):
+# rm -f ~/.viminfo ~/.vim/.viminfo ~/.vim/.netrwhist
+
+## ... then update user default configuration for VIM:
+# cp -rfp /root/.vim/ /etc/skel/
+
+## Add a user if necessary, e.g. sscait:
+# adduser sscait
+
+## Add the user to the sudo group, so that it can run sudo:
+# usermod -aG sudo sscait
+
+## Check the user's umask and check that its password never expires and check that it can run sudo:
+# su - sscait
+$ umask
+0002
+$ chage -l sscait
+$ sudo ls -la /root/
+$ exit
+# exit
+
+## Now log in via SSH as the user.
+## Then check it can run sudo:
+$ sudo ls -la /root/
+
+## In a separate window (just in case...), check that you can still log in via SSH as the user.
+## Then check for upgrades and install upgrades if necessary:
+$ sudo apt update
+$ sudo apt upgrade
+
+## Check whether any SQL-related packages are already installed:
+$ sudo apt list --installed | grep -i sql
+
+## Install mysql-server (I based it on the instructions at https://linuxgenie.net/install-mysql-ubuntu-24-04/ and https://documentation.ubuntu.com/server/how-to/databases/install-mysql/index.html ):
+## TODO/Note: it's likely that version 8+ of mysql-server works for sscait-web but isn't compatible with sscait-tournamentmanager for the reason mentioned in its README.md, so I'll probably have to deal with this when I ever get sscait-tournamentmanager working (then update the instructions).
+$ sudo apt install mysql-server
+
+## FYI, some relevant commands are:
+$ sudo view /var/log/mysql/error.log
+$ mysqld --version
+$ sudo service mysql status
+$ sudo ss -tap | grep mysql
+$ sudo journalctl -u mysql
+
+## Secure the MySQL installation, i.e. require strong passwords, remove anonymous users, disallow root login remotely, remove test database and access to it, reload privilege tables:
+$ sudo mysql_secure_installation
+
+## Set root MySQL password (replace <enter-the-password-here> with the actual password and ensure it doesn't contain a ' character or other characters that could cause problems):
+$ sudo mysql -u root
+FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '<enter-the-password-here>';
+FLUSH PRIVILEGES;
+exit
+## Reportedly, these commands might be necesary to put the new password in to effect (at least in this version), so I ran them:
+$ sudo killall -9 mysqld
+$ sudo service mysql start
+
+## Test that it requires a password now and can be started without sudo:
+$ sudo mysql -u root
+## You should see something like:
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+
+## Check that the following command prompts you for a password and that you can log in using it (type "exit" to exit):
+$ mysql -u root -p
+
+## Create the database:
+$ mysql -u root -p
+CREATE DATABASE sc;
+exit
+
+## I had prevously saved a backup (dump) of the sc database from the old webserver that I wanted to use to create the database on this server, so I uploaded sc.dump.sql.bak4.gz from my PC to the server via a local command e.g. "scp sc.dump.sql.bak4.gz sscait@<ip_address>:~/", then on the server, import it into MySQL and clean up:
+$ cd
+$ gunzip sc.dump.sql.bak4.gz
+$ sudo mysql -u root sc < ~/sc.dump.sql.bak4
+$ echo $?
+0
+$ gzip sc.dump.sql.bak4
+
+## Then create user(s) as desired (I created sscait-web for the website and sscait-tournamentmanager for the tournament manager software) and their password and original permissions as follows:
+$ mysql -u root -p sc
+## Replace <enter-the-password-here> with the actual password (and ensure it doesn't contain a ' character or other characters that could cause problems):
+CREATE USER 'sscait-web'@'localhost' IDENTIFIED WITH caching_sha2_password BY '<enter-a-new-password-here>';
+GRANT SELECT, UPDATE, INSERT, DELETE ON sc.fos_user TO 'sscait-web'@'localhost';
+GRANT SELECT, UPDATE, INSERT, DELETE ON sc.votes_for_players TO 'sscait-web'@'localhost';
+GRANT SELECT, UPDATE, INSERT ON sc.all_time_votes_for_players TO 'sscait-web'@'localhost';
+GRANT SELECT, UPDATE ON sc.games TO 'sscait-web'@'localhost';
+GRANT SELECT ON sc.achievements TO 'sscait-web'@'localhost';
+GRANT SELECT ON sc.achievement_texts TO 'sscait-web'@'localhost';
+GRANT SELECT ON sc.historical_elo_ratings TO 'sscait-web'@'localhost';
+GRANT SELECT ON sc.supporters TO 'sscait-web'@'localhost';
+FLUSH PRIVILEGES;
+## Note: use a different password for each account:
+CREATE USER 'sscait-tournamentmanager'@'localhost' IDENTIFIED WITH caching_sha2_password BY '<enter-a-new-password-here>';
+GRANT SELECT, UPDATE, INSERT ON sc.games TO 'sscait-tournamentmanager'@'localhost';
+GRANT SELECT, UPDATE ON sc.fos_user TO 'sscait-tournamentmanager'@'localhost';
+GRANT SELECT, INSERT ON sc.achievements TO 'sscait-tournamentmanager'@'localhost';
+GRANT SELECT ON sc.achievement_texts TO 'sscait-tournamentmanager'@'localhost';
+FLUSH PRIVILEGES;
+exit
+## Note: sscait-web has functions that call SELECT/UPDATE/INSERT/DELETE SQL statements for users/site_settings/countries/dialing_code table names which aren't in the database. The code for these tables were never used. They are simply remnants of some random example project for user login/registration/management that were rewritten so it worked with the SSCAIT database - feel free to delete all of that.
+
+## Install Apache:
+$ sudo apt install apache2
+
+## Test that you can connect to the IP address via http://<ip-address> and see the test page. Then:
+
+## Add firewall rules to prevent web access by the public (only me) while setting up the website (note: I used the guide at https://linuxconfig.org/ubuntu-24-04-firewall-a-quick-guide ):
+$ sudo ufw allow ssh
+## Note: the following command will not display rules if ufw is inactive:
+$ sudo ufw status verbose
+## The following command should show rules even if ufw is inactive. Ensure that 22/tcp (i.e. ssh) is allowed (at least):
+$ sudo ufw show added
+## Only if you have confirmed that 22/tcp (i.e. ssh) is allowed (at least), do the following:
+$ sudo ufw enable
+## It will prompt you as follows:
+Command may disrupt existing ssh connections. Proceed with operation (y|n)? y
+Firewall is active and enabled on system startup
+$ sudo ufw status verbose
+## Check that 22/tcp is allowed (at least):
+$ sudo ufw status verbose
+## Then (temporarily) allow traffic from your IP address for any port (replace <my_ip_address> with your IP address):
+$ sudo ufw allow from <my_ip_address>
+$ sudo ufw status verbose
+## Something similar to the following should be displayed:
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere
+Anywhere                   ALLOW IN    <my_ip_address>
+22/tcp (v6)                ALLOW IN    Anywhere (v6)
+## Note: if your IP address frequently changes, you would need to update your IP address in the rule whenever it changes in order to be allowed.
+
+## Install php:
+$ sudo apt install php
+
+## Install php-zip:
+$ sudo apt install php-zip
+
+## Install composer:
+$ sudo apt install composer
+
+## Install php-mysql:
+$ sudo apt install php-mysql
+
+## Check that the mysqlnd PHP extension is installed:
+$ php -m | grep -i mysqlnd
+mysqlnd
+
+## Set up some directories:
+$ mkdir -p ~/TM/server
+$ sudo mkdir /var/www/html/Replays
+
+## I want to create the SSCAIT bots & cache folders from backups I took from the old webserver.
+## Upload e.g. bots.bak20250426.tgz and cache.bak20250426.tgz to ~/TM/server/, then:
+$ cd ~/TM/server
+$ tar -xzf bots.bak20250426.tgz
+## If you don't have a backup of the cache directory, create an empty cache directory instead of the following command:
+$ tar -xzf cache.bak20250426.tgz
+$ cd
+## The next command makes it easier for the sscait user to edit website files.
+## If necessary, change "www-data" to whatever group is used by your installation of Apache:
+$ sudo usermod -a -G www-data sscait
+## Log out to refresh your permissions and include the new group:
+$ exit
+
+## Log back in, then check you have the group used by Apache:
+$ groups
+$ sudo mkdir /var/www/sscait-web
+$ sudo mv ~/TM/server/bots ~/TM/server/cache /var/www/sscait-web/
+$ sudo chmod -R 2770 /var/www/sscait-web/
+## If necessary, change "www-data" to whatever user and/or group is used by your installation of Apache:
+$ sudo chown -R www-data:www-data /var/www/sscait-web/
+$ cd /var/www/sscait-web/
+$ composer require phpmailer/phpmailer
+$ composer require league/oauth2-google
+$ cd
+## If necessary, change occurrences of "www-data" to whatever user and/or group is used by your installation of Apache:
+$ sudo chown -R www-data:www-data /var/www/sscait-web/
+
+## If it is not already installed, install git (for me, it was already installed):
+$ sudo apt install git
+
+## Clone the repository then do some setup:
+$ cd
+$ git clone https://github.com/certicky/sscait-web
+$ cd sscait-web
+$ cp -fp settings_server.php.template www/settings_server.php
+$ vim www/settings_server.php
+## Edit the following settings and replace the values where appropriate, e.g.:
+$db_username = 'sscait-web';
+$db_password = 'enter-password-for-the-db_username_user-here';
+$GLOBALS['SMTP_USERNAME'] = 'sscait@gmail.com';
+$GLOBALS['SMTP_GOOGLE_CLIENT_ID'] = 'enter-google-client-id-here';
+$GLOBALS['SMTP_GOOGLE_CLIENT_SECRET'] = 'enter-google-client-secret-here';
+$GLOBALS['SMTP_GOOGLE_REFRESH_TOKEN'] = 'enter-google-refresh-token-here';
+$GLOBALS['votingForPlayersEnabled'] = false;
+## Note: I temporarily set the following setting to false, until I am ready to test that the website can successfully send emails.
+$GLOBALS['loggingInEnabled'] = false;
+
+$ cd ~/sscait-web
+## Check that each php file's syntax is compatible with this php version (it should say "No syntax errors detected in" for each file):
+$ find . -name "*.php" -print0 | xargs -0 -n1 /usr/bin/php -l
+
+$ cd ~/sscait-web/www
+## Note: this doesn't copy the .gitignore file:
+$ sudo cp -rfp * /var/www/html/
+## If necessary, change occurrences of "www-data" to whatever user and/or group is used by your installation of Apache:
+$ sudo chown -R www-data:www-data /var/www
+$ sudo chmod 2770 /var/www
+$ sudo su -
+# find /var/www -type d -print0 | xargs -0 chmod 2770
+# find /var/www -type f -print0 | xargs -0 chmod 0660
+# exit
+
+## Some security hardening:
+$ sudo chmod -R o-rwx /etc/apache2/
+
+## Tip: to check for syntax errors etc after editing Apache config files, you can run:
+$ sudo apachectl configtest
+
+## The directory structures and config file structures used by Apache may vary depending on your flavor of Linux, so you may need to adapt the instructions below.
+
+## Look for references to "ServerName":
+$ sudo grep -ri "ServerName" /etc/apache2/
+## ... then edit the appropriate files to use "sscaitournament.com", e.g. I edited the value in only this file:
+$ sudo vim /etc/apache2/sites-available/000-default.conf
+## I.E. after the line:
+        #ServerName www.example.com
+## ... I inserted the line:
+        ServerName sscaitournament.com
+## Then save and close.
+
+## Look for references to "ServerAdmin":
+$ sudo grep -ri "ServerAdmin" /etc/apache2/
+## ... then edit the appropriate files to use "sscait+sscait-web-admin@gmail.com" as the email address, e.g. I edited the email address in only these files:
+$ sudo vim /etc/apache2/sites-available/000-default.conf
+$ sudo vim /etc/apache2/sites-available/default-ssl.conf
+
+## Optional hardening: Look for references to "Indexes":
+$ sudo grep -ri -e "Indexes" -e "FollowSymLinks" /etc/apache2/
+## ... then edit the appropriate files to use "None" instead for paths under "/var/www/", e.g. I edited only these files:
+$ sudo vim /etc/apache2/apache2.conf
+## Change the line:
+        Options Indexes FollowSymLinks
+## to the following (so that files and directories won't be browsable for e.g. the Replays folders):
+        Options None
+## then save and close.
+
+## Optional: I like to add some additional fields to Apache log messages, for easier analysis/debugging/monitoring. Skip this part if you like.
+## Look for references to "LogFormat":
+$ sudo grep -ri LogFormat /etc/apache2
+## Then change the format of occurrences of LogFormat to include %{sessionID}C and %T and port:%p, e.g. change from:
+LogFormat "%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %>s %O" common
+## ... to:
+LogFormat "%v:%p %h %l %u %t %{sessionID}C \"%r\" %>s %O %T port:%p \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+LogFormat "%h %l %u %t %{sessionID}C \"%r\" %>s %O %T port:%p \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t %{sessionID}C \"%r\" %>s %O %T port:%p" common
+## then save and close.
+
+## Look for references to "Directory" or "DocumentRoot":
+$ sudo grep -ri -e Directory -e DocumentRoot /etc/apache2/
+## ... then edit the appropriate files to use some settings for paths under "/var/www/", e.g. I edited only these files:
+$ sudo vim /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/default-ssl.conf
+## In each file, after the line:
+        DocumentRoot /var/www/html
+## ... insert the following lines:
+        <Directory "/var/www/html">
+                Order allow,deny
+                Allow from all
+                <LimitExcept GET POST HEAD>
+                        Deny from all
+                </LimitExcept>
+        </Directory>
+
+        <Directory "/var/www/sscait-web">
+                Options None
+                AllowOverride None
+                Require all denied
+        </Directory>
+## then save and close both files.
+
+## Ensure that the headers and module is enabled and loaded, so that "Header" configurations will be recognized (neither of them were enabled for me in Ubuntu 24.04 with Apache 2.24 until I did this). Note: it is safe to do the following even if it is already enabled:
+$ sudo a2enmod headers
+$ sudo a2enmod rewrite
+$ sudo systemctl restart apache2
+
+## Optional hardening: Look for references to some settings:
+$ sudo grep -ri -e ServerTokens -e ServerSignature -e FileETag -e TraceEnable -e Header -e RewriteEngine -e RewriteCond -e RewriteRule -e XSS-Protection -e Referrer-Policy -e Permissions-Policy /etc/apache2/
+## ... then edit the appropriate files to use the following desired setting values if explicitly mentioned and not already using the desired value(s):
+ServerTokens "Prod"
+ServerSignature "Off"
+FileETag None
+TraceEnable off
+Header edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+Header always append X-Frame-Options SAMEORIGIN
+Header set X-XSS-Protection "1;mode=block"
+RewriteEngine On
+RewriteCond "%{THE_REQUEST}" "HTTP[/]1[.]0[^ ]*$" [OR]
+RewriteCond "%{THE_REQUEST}" "HTTP[/]0[^ ]*$"
+RewriteRule .* - [F]
+Header always set Referrer-Policy "strict-origin"
+Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
+## E.g. I edited only these files:
+$ sudo vim /etc/apache2/conf-available/security.conf
+## Change the line:
+ServerTokens OS
+## ... and use the following 2 lines instead:
+#ServerTokens OS
+ServerTokens Prod
+## ... then change the following 2 lines:
+#ServerSignature Off
+ServerSignature On
+## ... to:
+ServerSignature Off
+#ServerSignature On
+## ... then save and close (note: TraceEnable was already explicitly set to Off, and the other desired setting values were not mentioned).
+
+## Optional hardening: Also, in the same file, I changed the following 2 lines (to forbid access to version control directories in case I accidentally publish GIT/SVN directories, but in theory they would not be published using my instructions):
+#RedirectMatch 404 /\.git
+#RedirectMatch 404 /\.svn
+## ... to:
+RedirectMatch 404 /\.git
+RedirectMatch 404 /\.svn
+## ... then save and close.
+
+## Optional hardening: Also, in the same file, I appended the following 14 lines:
+
+## Appended manually, as per e.g. https://docs.faveohelpdesk.com/docs/helpers/server-hardening/apache-hardening#4Click-Jacking-defense-with-X-Frame-Options (note: I think it should say "X-XSS-Protection" not just "XSS-Protection".
+Header always append X-Frame-Options SAMEORIGIN
+Header set X-XSS-Protection "1;mode=block"
+FileETag None
+Header always set Referrer-Policy "strict-origin"
+Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
+<If "%{HTTPS} == 'on'">
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubdomains"
+</If>
+RewriteEngine On
+RewriteCond "%{THE_REQUEST}" "HTTP[/]1[.]0[^ ]*$" [OR]
+RewriteCond "%{THE_REQUEST}" "HTTP[/]0[^ ]*$"
+RewriteRule .* - [F]
+## ... then save and close.
+
+## Rename the default Apache page, so that ours will be used instead:
+$ mv /var/www/html/index.html /var/www/html/index.html.bak0
+
+## Edit some settings as follows, which are needed in order to be able to upload large bots.
+## Look for post_max_size and upload_max_filesize settings in php.ini files:
+$ grep -i ^"[^;]*size" /etc/php/8.3/cli/php.ini /etc/php/8.3/apache2/php.ini
+## It printed:
+/etc/php/8.3/cli/php.ini:post_max_size = 8M
+/etc/php/8.3/cli/php.ini:upload_max_filesize = 2M
+/etc/php/8.3/apache2/php.ini:post_max_size = 8M
+/etc/php/8.3/apache2/php.ini:upload_max_filesize = 2M
+## Edit the files and comment out the settings and insert these lines respectively, so that the output changes to as follows:
+$ grep -i ^"[^;]*size" /etc/php/8.3/cli/php.ini /etc/php/8.3/apache2/php.ini
+/etc/php/8.3/cli/php.ini:post_max_size = 101M
+/etc/php/8.3/cli/php.ini:upload_max_filesize = 100M
+/etc/php/8.3/apache2/php.ini:post_max_size = 101M
+/etc/php/8.3/apache2/php.ini:upload_max_filesize = 100M
+
+## Optional hardening: Check for references to WebDAV because we do not want it to be enabled:
+$ sudo grep -ri ^"[^#]*dav" /etc/apache2/
+## It only found the following references, so I think it is not enabled (i.e. nothing was found under /etc/apache2/mods-enabled/).
+/etc/apache2/mods-available/setenvif.conf:BrowserMatch "^WebDAVFS/1\.[012]" redirect-carefully
+/etc/apache2/mods-available/setenvif.conf:BrowserMatch "^Dreamweaver-WebDAV-SCM1" redirect-carefully
+/etc/apache2/mods-available/dav_lock.load:LoadModule dav_lock_module /usr/lib/apache2/modules/mod_dav_lock.so
+/etc/apache2/mods-available/dav_fs.load:LoadModule dav_fs_module /usr/lib/apache2/modules/mod_dav_fs.so
+/etc/apache2/mods-available/dav.load:<IfModule !mod_dav.c>
+/etc/apache2/mods-available/dav.load:	LoadModule dav_module /usr/lib/apache2/modules/mod_dav.so
+/etc/apache2/mods-available/dav_fs.conf:DAVLockDB ${APACHE_LOCK_DIR}/DAVLock
+## So check whether any of them are enabled:
+$ sudo ls -la /etc/apache2/mods-enabled/{setenvif.conf,dav_lock.load,dav_fs.load,dav.load,dav_fs.conf}
+## It printed:
+ls: cannot access '/etc/apache2/mods-enabled/dav_lock.load': No such file or directory
+ls: cannot access '/etc/apache2/mods-enabled/dav_fs.load': No such file or directory
+ls: cannot access '/etc/apache2/mods-enabled/dav.load': No such file or directory
+ls: cannot access '/etc/apache2/mods-enabled/dav_fs.conf': No such file or directory
+lrwxrwxrwx 1 root root 31 Jun 16 11:02 /etc/apache2/mods-enabled/setenvif.conf -> ../mods-available/setenvif.conf
+## I had a look at /etc/apache2/mods-available/setenvif.conf and I don't think it enables Dav, and by default it is disabled, so no worries.
+
+## Optional hardening: Check for references to the mod_info module because we do not want it enabled:
+$ sudo grep -ri ^"[^#]*mod.*info" /etc/apache2/
+/etc/apache2/mods-available/info.load:LoadModule info_module /usr/lib/apache2/modules/mod_info.so
+$ sudo find /etc/apache2/ -name info.load
+/etc/apache2/mods-available/info.load
+## It was not found under /etc/apache2/mods-enabled/, so no worries.
+
+## Optional hardening: Double-check that the Dav/mod_info modules aren't enabled, by listing the modules that are enabled:
+$ sudo apache2ctl -M
+
+## Note: my hosting company deal includes a static IP address, so I didn't need to manually acquire one.
+
+## Tip: to display the server's public IP address:
+$ curl ifconfig.me
+## At this point, test that everything is working ok so far, i.e. reboot the machine, check journalctl, and check that you can view the website's IP address in a web browser using HTTP (http://<ip_address>), and e.g. download a bot, and test that other pages are working. Don't try to log in yet, because HTTP is insecure.
+
+## Copy the SSL certificate setup files to the server, i.e. I did:
+$ scp ~/S.bakYYYYMMDD/SSCAIT/keys/keys.bk20250426.tgz sscait@<ip_address>:~/TM/server/
+## ... then on the server:
+$ cd TM/server/
+$ tar -xzf keys.bk20250426.tgz
+$ mv origin_ca_ecc_root.pem origin_certificate.pem private_key.pem /var/www/sscait-web/
+$ sudo chown www-data:www-data /var/www/sscait-web/{origin_ca_ecc_root.pem,origin_certificate.pem,private_key.pem}
+$ sudo chmod 660 /var/www/sscait-web/{origin_ca_ecc_root.pem,origin_certificate.pem,private_key.pem}
+
+## Look for references to some SSL-related settings:
+$ sudo grep -ri -e SSLEngine -e SSLCertificateFile -e SSLCertificateKeyFile -e SSLCertificateChainFile /etc/apache2/
+## ... then edit the appropriate file(s) to use the following setting values, i.e. I edited the values in only this file:
+$ sudo vim /etc/apache2/sites-available/default-ssl.conf
+## I.E. ensure that SSLEngine is on (it was already configured in this file as on):
+        SSLEngine on
+## I changed the lines:
+        SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+## ... to:
+        #SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateFile      /var/www/sscait-web/origin_certificate.pem
+        #SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+        SSLCertificateKeyFile   /var/www/sscait-web/private_key.pem
+## After the line:
+        #SSLCertificateChainFile /etc/apache2/ssl.crt/server-ca.crt
+## ... insert the line:
+        SSLCertificateChainFile /var/www/sscait-web/origin_ca_ecc_root.pem
+## ... then save and close.
+
+## Optional hardening: Look for references to some HTTPS-related header settings:
+$ sudo grep -ri -e Set-Cookie -e Strict-Transport-Security /etc/apache2/
+## ... then edit the appropriate file(s) to use the following setting values, i.e. I edited the values in only this file because the values weren't found, and they should only be used if SSL is used:
+$ sudo vim /etc/apache2/sites-available/default-ssl.conf
+## I inserted the following lines at the end of the whole block:
+        <IfModule headers_module>
+                Header always edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+        </IfModule>
+## ... the save and close.
+
+## Optional hardening: Look for references to some SSL-related header settings:
+$ sudo grep -r -e SSLProtocol -e SSLHonorCipherOrder -e SSLCipherSuite -e SSLSessionTickets -e SSLUseStapling -e SSLStaplingCache /etc/apache2/
+## ... then edit the appropriate file(s) to use the following setting values, i.e. I edited only this file as follows:
+$ sudo vim /etc/apache2/mods-available/ssl.conf
+## Comment the line:
+SSLCipherSuite HIGH:!aNULL
+## ... then insert the line:
+SSLCipherSuite HIGH:!DSS:!MEDIUM:!aNULL:!MD5:!RC4
+## ... then uncomment this line:
+#SSLHonorCipherOrder on
+## ... then I changed the line:
+SSLProtocol all -SSLv3
+## ... to the following (i.e. so that only TLSv1.3 is currently allowed):
+#SSLProtocol all -SSLv3
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1 -TLSv1.2
+## ... Note: I left this line unchanged because I want it to be off:
+SSLSessionTickets off
+## ... then save and close. Note: references to SSLUseStapling and SSLStaplingCache weren't found, so I didn't need to do anything, because they are not used by default, and the Cloudflare certificate doesn't seem to support stapling.
+
+## Optional hardening: Look for references to "Protocols":
+$ sudo grep -r Protocols /etc/apache2/
+## ... then edit the appropriate file(s) to not allow h2c (i.e. cleartext; note that I'm not sure whether this improves security but never mind) and prefer h2 over http/1.1, i.e. I edited the values in only this file:
+$ sudo vim /etc/apache2/mods-available/http2.conf
+## Change the line:
+Protocols h2 h2c http/1.1
+## ... to:
+#Protocols h2 h2c http/1.1
+Protocols h2 http/1.1
+## ... then save and close.
+
+## To suppress unnecessary errors: Look for references to "SetHandler":
+$ sudo grep -ri SetHandler /etc/apache2/
+## A few were found, but the only ones that would be allowed are in one file:
+$ sudo vim /etc/apache2/mods-available/php8.3.conf
+## Enclose every "SetHandler" line that could be allowed with the following If statement and closing If statement (to avoid php errors such as "script '/var/www/html/wso2.php' not found or unable to stat" in apache's error.log file), i.e. I only needed to change one occurrence, i.e. change:
+<FilesMatch ".+\.ph(?:ar|p|tml)$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+## to:
+<FilesMatch ".+\.ph(?:ar|p|tml)$">
+    <If "-f %{REQUEST_FILENAME}">
+        SetHandler application/x-httpd-php
+    </If>
+</FilesMatch>
+## then save and close.
+
+## Enable mod_ssl:
+$ sudo a2enmod ssl
+
+## Enable the site for the default SSL config file:
+$ sudo a2ensite default-ssl.conf
+
+## Check for syntax errors in Apache config files:
+$ sudo apachectl configtest
+
+## Restart Apache:
+$ sudo systemctl restart apache2
+
+## Then I changed loggingInEnabled from "false" to "true" in settings_server.php, then tested that the website can send an email to reset a user's password (then I reverted the changes this had made to the user's entry in the fos_user table in the database).
+
+## Enable redirection settings from HTTP -> HTTPS:
+$ sudo vim /etc/apache2/sites-available/000-default.conf
+## After the line:
+        ServerName sscaitournament.com
+## ... insert the line:
+        Redirect permanent / https://sscaitournament.com/
+## ... then save and close.
+
+## Then test that HTTP automatically redirects to HTTPS.
+
+## Change the domain from http to https in settings_server.php:
+$ vim /var/www/html/settings_server.php
+## Change "http" to "https" in the following line:
+$GLOBALS['DOMAIN_WITHOUT_SLASH'] = 'https://'.trim($_SERVER['SERVER_NAME'],'/');
+## ... then save and close.
+
+## Backup the current state of the MySQL database:
+$ mysqldump -u root -p sc > ~/sc.dump.sql.bak5
+
+## To test that large files (99-100MB) can be uploaded, I backed up my bot's folder:
+$ cd /var/www/sscait-web/bots
+$ tar -czf 194.tgz 194/
+## ... then on local PC, create a ZZZKBot.dll file between 99 and 100 MB and create a zip file to upload:
+$ head -c 102000K /dev/urandom > ZZZKBot.dll
+## Then put BWAPI.dll alongside it then:
+$ zip AI_big.zip BWAPI.dll ZZZKBot.dll
+## Then log in and upload it, then test you can download and extract the file, then revert the folder and database and clean up as follows:
+$ cd /var/www/sscait-web/bots
+$ rm -rf 194/
+$ tar -xzf 194.tgz
+$ sudo chown -R www-data:www-data 194/
+$ rm 194.tgz
+$ mysql -u root -p sc
+## Then in MySQL, I reset the last update time for the account to what it was before the test:
+UPDATE fos_user SET last_update_time = '2024-07-26 09:00:29' WHERE id = '194';
+exit
+
+## Optional: this wasn't necessary for me because I already had a full backup of the SSCAIT cache folder which included all of them, but when I first set up SSCAIT on a webserver, I also ran wget for every bot's binary download URL (using the links from https://sscaitournament.com/api/bots.php, with a bit of scripting), so that an AI.zip file would be generated in each valid bot's folder.
+
+## Then, when I was ready to get DNS working for sscaitournament.com, I reset (which also disables) the firewall, so that everyone can connect to the server over web:
+$ sudo ufw reset
+
+## Then in CloudFlare, for the sscaitournament.com entry that already existed, I added/updated the A DNS record for "@" and "www" to point to the IP address (just IPv4). Check that DNSSEC is enabled (it was already enabled) and check that the Encryption Mode in CloudFlare is shown as "Full (strict)" (it was already that). AFAIK, my hosting company doesn't provide a static IPv6 address, otherwise I would have created AAAA records for it, similarly as for the A records.
+
+## Then test that the DNS works (for HTTPS, and check that HTTP automatically redirects to HTTPS).
+
+## FTR, after I had got the website and database and bots folders setup and working (but no replay files) and emailing working, and AI.zip files generated for all bots, folder sizes were as follows:
+$ du -sm /var/www/sscait-web/
+4065    /var/www/sscait-web/
+$ du -sm /var/www/html/
+80      /var/www/html/
+$ du -sm ~/
+1163    /home/sscait/
+$ du -sm ~/sscait-web/
+153     /home/sscait/sscait-web/
+$ du -sm ~/TM/
+961     /home/sscait/TM/
