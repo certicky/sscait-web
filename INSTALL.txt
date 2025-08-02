@@ -102,6 +102,9 @@ $ mysql -u root -p
 CREATE DATABASE sc;
 exit
 
+## Tip: to display the server's public IP address:
+$ curl ifconfig.me
+
 ## I had prevously saved a backup (dump) of the sc database from the old webserver that I wanted to use to create the database on this server, so I uploaded sc.dump.sql.bak4.gz from my PC to the server via a local command e.g. "scp sc.dump.sql.bak4.gz sscait@<ip_address>:~/", then on the server, import it into MySQL and clean up:
 $ cd
 $ gunzip sc.dump.sql.bak4.gz
@@ -340,7 +343,9 @@ RewriteCond "%{THE_REQUEST}" "HTTP[/]0[^ ]*$"
 RewriteRule .* - [F]
 Header always set Referrer-Policy "strict-origin"
 Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
-## E.g. I edited only these files:
+
+## E.g. I edited only the files mentioned in the next few sections:
+
 $ sudo vim /etc/apache2/conf-available/security.conf
 ## Change the line:
 ServerTokens OS
@@ -430,8 +435,6 @@ $ sudo apache2ctl -M
 
 ## Note: my hosting company deal includes a static IP address, so I didn't need to manually acquire one.
 
-## Tip: to display the server's public IP address:
-$ curl ifconfig.me
 ## At this point, test that everything is working ok so far, i.e. reboot the machine, check journalctl, and check that you can view the website's IP address in a web browser using HTTP (http://<ip_address>), and e.g. download a bot, and test that other pages are working. Don't try to log in yet, because HTTP is insecure.
 
 ## Copy the SSL certificate setup files to the server, i.e. I did:
@@ -531,7 +534,7 @@ $ sudo apachectl configtest
 ## Restart Apache:
 $ sudo systemctl restart apache2
 
-## Then I changed loggingInEnabled from "false" to "true" in settings_server.php, then tested that the website can send an email to reset a user's password (then I reverted the changes this had made to the user's entry in the fos_user table in the database).
+## Then I changed loggingInEnabled from "false" to "true" in settings_server.php, then tested that the website can send an email to reset my bot's account's password (then I reverted the changes this had made to the user's entry in the fos_user table in the database, similar to the UPDATE command further below).
 
 ## Enable redirection settings from HTTP -> HTTPS:
 $ sudo vim /etc/apache2/sites-available/000-default.conf
@@ -581,11 +584,17 @@ $ sudo ufw reset
 
 ## FTR, after I had got the website and database and bots folders setup and working (but no replay files) and emailing working, and AI.zip files generated for all bots, folder sizes were as follows:
 $ du -sm /var/www/sscait-web/
-4065    /var/www/sscait-web/
+4073	/var/www/sscait-web/
+$ du -sm /var/www/sscait-web/bots/
+4066	/var/www/sscait-web/bots/
+$ du -sm /var/www/sscait-web/cache/
+5	/var/www/sscait-web/cache/
+$ du -sm /var/www/sscait-web/vendor/
+3	/var/www/sscait-web/vendor/
 $ du -sm /var/www/html/
 80      /var/www/html/
 $ du -sm ~/
-1163    /home/sscait/
+1151    /home/sscait/
 $ du -sm ~/sscait-web/
 153     /home/sscait/sscait-web/
 $ du -sm ~/TM/
