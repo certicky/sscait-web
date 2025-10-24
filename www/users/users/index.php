@@ -230,7 +230,7 @@ function listOneFolder($folderPath,$folderReadableName,$binaryPath="N/A",$elemen
 						<tr>
 							<td>Full Name:</td>
 							<td><?php if (!empty($allowNameUpdates)) { ?>
-							    <input name="name" type="text" size="25" maxlength="24" value="<?=$usr['full_name'];?>"/>
+							    <input name="name" type="text" size="24" maxlength="24" value="<?=$usr['full_name'];?>"/>
                                 <?php
                                 } else {
 							        echo $usr['full_name'];

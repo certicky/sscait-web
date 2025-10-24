@@ -70,7 +70,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/settings_server.php');
                         <label for="password">Password:</label>
                     </td>
                     <td>
-                        <input name="password" type="password" size="25" maxlength="15"/>
+                        <input name="password" type="password" size="15" maxlength="15"/>
                     </td>
                 </tr>
                 <tr>
