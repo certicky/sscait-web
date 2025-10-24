@@ -891,7 +891,7 @@ function pass_recovery($email)
 
 	if($num == 1)
 		{
-		$temp_password = random_string('alnum', 8);
+		$temp_password = random_string('alnum', 16);
 		//$salt = 's+(_a*';
 		$temp_pass = md5($temp_password/*.$salt*/);
 
