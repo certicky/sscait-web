@@ -342,7 +342,7 @@ RewriteCond "%{THE_REQUEST}" "HTTP[/]1[.]0[^ ]*$" [OR]
 RewriteCond "%{THE_REQUEST}" "HTTP[/]0[^ ]*$"
 RewriteRule .* - [F]
 Header always set Referrer-Policy "strict-origin"
-Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
+Header always set Permissions-Policy "geolocation=(), midi=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
 
 ## E.g. I edited only the files mentioned in the next few sections:
 
@@ -371,11 +371,12 @@ RedirectMatch 404 /\.svn
 ## Optional hardening: Also, in the same file, I appended the following 14 lines:
 
 ## Appended manually, as per e.g. https://docs.faveohelpdesk.com/docs/helpers/server-hardening/apache-hardening#4Click-Jacking-defense-with-X-Frame-Options (note: I think it should say "X-XSS-Protection" not just "XSS-Protection".
+## Note: the value for "Header always set Permissions-Policy" originally included "sync-xhr=()" but I removed it because it broke some functionality (i.e. browser console permissions errors and stuck with a "spinning circle" graphic when someone tries to register or uploadBinary or uploadAdditional or updatepass) and I don't know enough about PHP/JS to try to make them work asynchronously.
 Header always append X-Frame-Options SAMEORIGIN
 Header set X-XSS-Protection "1;mode=block"
 FileETag None
 Header always set Referrer-Policy "strict-origin"
-Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
+Header always set Permissions-Policy "geolocation=(), midi=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
 <If "%{HTTPS} == 'on'">
         Header always set Strict-Transport-Security "max-age=31536000; includeSubdomains"
 </If>
