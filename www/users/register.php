@@ -78,7 +78,7 @@
 				<label for="username">Email:</label>
 			</td>
 			<td>
-			<input name="username" type="text" size="25" maxlength="40" value="<?php if(isset($_POST['username'])){echo $_POST['username'];}?>"/>
+			<input name="username" type="text" size="25" maxlength="60" value="<?php if(isset($_POST['username'])){echo $_POST['username'];}?>"/>
 			</td>
 		  </tr>
 		  <tr>
@@ -86,7 +86,7 @@
 				<label for="name">Bot name or your full name:</label>
 			</td>
 			<td>
-			<input name="name" type="text" size="25" maxlength="40" value="<?php if(isset($_POST['name'])){echo $_POST['name'];}?>"/>
+			<input name="name" type="text" size="25" maxlength="24" value="<?php if(isset($_POST['name'])){echo $_POST['name'];}?>"/>
 			</td>
 		  </tr>
 		  <tr>

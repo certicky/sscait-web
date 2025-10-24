@@ -46,7 +46,7 @@ include('lib/functions/functions.php');
 		<table align="center" width="50%" cellspacing="1" cellpadding="1" border="0">
 		  <tr>
 			<td><label for="email">Your Email:</label></td>
-			<td><input onclick="this.value='';" name="email" type="text" size="25" maxlength="30" value="<?php if(isset($_POST['email'])){echo $_POST['email'];}?>" /></td>
+			<td><input onclick="this.value='';" name="email" type="text" size="25" maxlength="60" value="<?php if(isset($_POST['email'])){echo $_POST['email'];}?>" /></td>
 		  </tr>
 		  <tr>
 			<td>&nbsp;</td>
