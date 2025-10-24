@@ -496,7 +496,7 @@ function addUser($user,$pass,$name,$race,$student,$school,$description,$botType,
 	//$salt = 's+(_a*';
 	$pass = md5($pass/*.$salt*/);
 
-	$rand_str = random_string('alnum', 8);
+	$rand_str = random_string('alnum', 128);
 	$activation_key = md5($rand_str/*.$salt*/);
 
 	$reg_date = date("l, M j, Y, g:i a");

@@ -60,7 +60,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/settings_server.php');
                         <label for="username">Email:</label>
                     </td>
                     <td>
-                        <input onclick="this.value='';" name="username" type="text" size="25" maxlength="60" value="<?php if (isset($_POST['username'])) {
+                        <input onclick="this.value='';" name="username" type="text" size="25" maxlength="128" value="<?php if (isset($_POST['username'])) {
                             echo $_POST['username'];
                         } ?>"/>
                     </td>
@@ -70,7 +70,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/settings_server.php');
                         <label for="password">Password:</label>
                     </td>
                     <td>
-                        <input name="password" type="password" size="15" maxlength="15"/>
+                        <input name="password" type="password" size="25" maxlength="128"/>
                     </td>
                 </tr>
                 <tr>
