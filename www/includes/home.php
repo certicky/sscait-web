@@ -60,7 +60,7 @@
 			<div id="subscribe" style="margin-top: 2ex;">
 				Our Discord server and YouTube channel:
 			        <!--<a href="http://www.facebook.com/groups/bwapi/" id="sub_facebook" target="_blank" title="Join SC AI FB group">FB</a>-->
-			        <a href="https://discordapp.com/invite/w9wRRrF" id="sub_discord" target="_blank" title="StarCraft AI Discord server">Discord</a>
+			        <a href="https://discordapp.com/invite/w9wRRrF" id="sub_discord" target="_blank" title="Brood War AI Discord server">Discord</a>
 			        <a href="http://www.youtube.com/user/certicky/" id="yt_channel" target="_blank" title="SSCAIT YouTube channel">YouTube</a>
 		        </div>
 			<!--<iframe style="margin: 0; padding: 0;"

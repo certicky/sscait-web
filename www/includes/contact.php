@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/settings_server.php';
 <div style="text-align: left;">
 <!--The tournament is organized by its founder <a href="http://breakk.no-ip.org/" title="Michal Certicky - HomePage">Michal Certicky</a>. You can contact him directly with any questions here:-->
 <ul id="contacts">
-	<li><span class="category">Discord <b>(primary, fastest)</b>:</span> SC AI <a href="https://discordapp.com/invite/w9wRRrF">Discord chat server</a> </li>
+	<li><span class="category">Discord <b>(primary, fastest)</b>:</span> Brood War AI <a href="https://discordapp.com/invite/w9wRRrF">Discord chat server</a> </li>
 	<li><span class="category">Facebook:</span> <a target="_blank" href="http://www.facebook.com/groups/bwapi/">StarCraft AI</a> group on FB</li>
 	<!--<li><span class="category">IRC:</span> <a target="_blank" href="http://webchat.freenode.net/?channels=BWAPI">freenode IRC channel #BWAPI</a></li>-->
 	<li><span class="category">Admin:</span> <a href="mailto:<?php echo $GLOBALS["ADMIN_EMAIL"]; ?>"><?php echo $GLOBALS["ADMIN_EMAIL"]; ?></a></li>

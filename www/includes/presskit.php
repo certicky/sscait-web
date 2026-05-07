@@ -201,7 +201,7 @@ clever heuristics and fastest learning capabilities.</p>
 <hr>
 <h4><a name="contact">Press/PR Contact</a></h4>
 <ul>
-   <li><a target="_blank" href="https://discordapp.com/invite/w9wRRrF">SSCAIT Discord server</a></li>
+   <li><a target="_blank" href="https://discordapp.com/invite/w9wRRrF">Brood War AI Discord server</a></li>
    <li><a target="_blank" href="http://facebook.com/groups/bwapi">Facebook.com/groups/bwapi</a></li>
    <li><a target="_blank" href="http://twitter.com/sscaitournament">Twitter.com/sscaitournament</a></li>
 </ul>

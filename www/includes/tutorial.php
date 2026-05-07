@@ -11,7 +11,7 @@
   <p>And lastly, if you're interested in writing a bot in C++ on Windows, check out <a href="https://www.youtube.com/watch?v=FEEkO6__GKw">Dave Churchill's C++ bot tutorial</a>. You may still find most of this tutorial helpful, as the Java and C++ interfaces are very similar.</p>
     
   <h4>Getting help</h4>
-  <p>If you get stuck in your StarCraft AI journey, check out the Troubleshooting section below, or visit the <a target="_blank" href="https://discordapp.com/invite/w9wRRrF">SSCAIT Discord chat room</a>. The community is very welcoming to new authors and eager to help.</p>
+  <p>If you get stuck in your StarCraft AI journey, check out the Troubleshooting section below, or visit the <a target="_blank" href="https://discordapp.com/invite/w9wRRrF">Brood War AI Discord server</a>. The community is very welcoming to new authors and eager to help.</p>
 
   <h3 id="setup">Java bot on Windows: Setup</h3>
   <ul><li>Download and unzip <a href="http://www.cs.mun.ca/~dchurchill/starcraftaicomp/files/Starcraft_1161.zip" target="_blank">StarCraft 1.16.1</a> from Memorial University, hosted with permission from Activision Blizzard. Newer versions of StarCraft like Remastered are incompatible with BWAPI.</li>
@@ -290,6 +290,6 @@ building positions. It's all up to you.</p>
 	<p>On some systems, the administrator privileges might be needed for the bot to run. Try running the bot (Eclipse) or Chaoslauncher (or both) as Administrator.</p>
 
   <h4>Still stuck?</h4>
-	<p>The best place to ask questions is the <a href="https://discordapp.com/invite/w9wRRrF">SSCAIT Discord chat room</a>. You can also ask in questions in the <a href="https://www.facebook.com/groups/bwapi/10154329162975261/">BWAPI Facebook group</a>.</p>
+	<p>The best place to ask questions is the <a href="https://discordapp.com/invite/w9wRRrF">Brood War AI Discord server</a>. Previously, we used the <a href="https://www.facebook.com/groups/bwapi/10154329162975261/">BWAPI Facebook group</a>.</p>
 
 <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?lang=css&skin=sunburst"></script>
