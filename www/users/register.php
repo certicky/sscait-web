@@ -199,6 +199,7 @@
 			<td>&nbsp;</td>
 			<td>
 				<input class="pure-button pure-button-primary" type="submit" name="register" value="Register" /><img id="loading" src="images/loading.gif" alt="uploading.." />
+				<label for="loading"><br />If registration is successful, you will be sent an email containing an activation code that you need to activate in order to be able to log in. If registration is successful but you you don't receive it, check your spam email folder.</label>
 			</td>
 		  </tr>
 
