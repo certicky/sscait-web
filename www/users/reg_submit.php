@@ -62,7 +62,7 @@ include('lib/functions/functions.php');
 	// BOT INFO
 	elseif(strlen($_POST['description'])>255)
 	{
-		die(msg(0,"<p>Description must have at least 255 characters.</p>"));
+		die(msg(0,"<p>Description must have no more than 255 characters.</p>"));
 	}
 
 	elseif($_POST['race'] != 'Terran' && $_POST['race'] != 'Zerg' && $_POST['race'] != 'Protoss' && $_POST['race'] != 'Random')
