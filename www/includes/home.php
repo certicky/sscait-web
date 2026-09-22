@@ -3,9 +3,9 @@
 	<div id="home-stream-cell">
 
         <div style=" margin 2ex 0; padding: 1ex; background: #449D2D; color: white; font-size: 85%; border: solid 1px black; border-radius: 7px;">
-        Games and tournaments are no longer played and old replays are no longer available, as this website was migrated to a new owner and host lacking sufficient resources to run them.
-        The website still works though, including bot downloads, registration and bot submission.
+        Bot downloads/registration/submission/updates still work.
         If you add your bot here, it will automatically start playing on <a style="color: #fff;" href="https://www.basil-ladder.net">BASIL</a> within a day or so.
+        However, games/tournaments are no longer played and old replays are no longer available, as this website was migrated to a new owner and host lacking sufficient resources to run them.
         </div>
 
         <?php
